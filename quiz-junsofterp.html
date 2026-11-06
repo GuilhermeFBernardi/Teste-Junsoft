@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JunsoftERP: A Jornada do Implantador</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1d2433;--mu:#667;--ac:#4f46e5;--ok:#16a34a;--er:#dc2626;--bd:#d9dce6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111522;--card:#1b2133;--tx:#e8ebf5;--mu:#9aa3b8;--ac:#818cf8;--ok:#4ade80;--er:#f87171;--bd:#2d3550;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111522;--card:#1b2133;--tx:#e8ebf5;--mu:#9aa3b8;--ac:#818cf8;--ok:#4ade80;--er:#f87171;--bd:#2d3550;color-scheme:dark}
+.tg{display:block;margin:10px 16px 0 auto}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:12px}
+.top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--mu)}
+.bar{height:8px;background:var(--bd);border-radius:9px;margin:10px 0}.bar i{display:block;height:100%;background:var(--ac);border-radius:9px}
+h1,h2{margin:.2em 0}h2{font-size:1.15rem}.boss{color:var(--er);font-weight:700;font-size:13px}
+button{font:inherit;color:inherit;cursor:pointer}
+.o{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:8px 0}
+.o:hover:not(:disabled){border-color:var(--ac)}.o.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,transparent)}.o.er{border-color:var(--er);background:color-mix(in srgb,var(--er) 18%,transparent)}.o.off{opacity:.3}
+.b{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:11px 18px;margin-top:8px}.g{background:transparent;border:1px solid var(--bd);border-radius:10px;padding:8px 12px;font-size:14px}.g:disabled{opacity:.4}
+.fb{margin-top:10px;font-size:15px}.big{font-size:2.2rem;font-weight:800;color:var(--ac)}
+input{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px;width:100%;max-width:280px}
+table{width:100%;border-collapse:collapse;font-size:15px}td,th{padding:6px 4px;text-align:left;border-bottom:1px solid var(--bd)}td:last-child,th:last-child{text-align:right}
+</style>
+</head>
+<body>
+<button class="tg g" id="tg" onclick="tgl()" aria-label="Alternar tema claro ou escuro">🌙</button>
+<main id="app"></main>
+<script>
+const N=["Estagiário","Operador","Analista","Especialista","Fiscal","Arquiteto","Detetive de Dados","Mestre dos Números","Guardião das Migrations","Lenda da Implantação"];
+const T=["Cadastros básicos","Rotina diária","Fluxos de negócio","Segmentos verticais","Fiscal e integrações","Visão geral","Consulta ao banco","Tipos do banco","Migrations","Nova base com especificações"];
+// pergunta|resposta correta|explicação (opcional)|alternativas erradas separadas por ;  — a última de cada fase é o Chefe.
+const D=[`Qual é o nome do ERP desktop em 64 bits?|JunsoftERP V2||JunsoftERP V1;JunsoftGestão 64;JunsoftDesk Pro
+Cliente e fornecedor são cadastros totalmente separados.|Falso|É um cadastro único de Pessoa, que pode ser as duas coisas.
+O que o Pedido de venda origina quando é faturado?|A Nota Fiscal||O boleto bancário;O contrato de venda;A ordem de produção
+O sistema aceita mais de uma empresa na mesma base?|Sim|É multiempresa.
+Qual cadastro precisa existir antes do endereço de um cliente?|Pessoa||Município;Vendedor;Empresa
+Para que serve o cadastro de Vendedor?|Vincular vendas e calcular comissões||Controlar o estoque por lote;Emitir boletos bancários;Definir parcelamentos de compra
+O que o Centro de Resultado permite?|Alocar custos por área ou resultado||Cadastrar endereços de clientes;Definir a grade dos produtos;Controlar o horário dos usuários
+Um produto pode ter grade, lote e local de estoque?|Sim
+Em qual área ficam usuários, permissões e parâmetros?|Administração||Contábil;Financeiro;Fiscal
+CHEFE: qual destes é um cadastro mestre?|Centros de Resultado||Retorno bancário;Nota aprovada;Fechamento de caixa`,
+`Qual conjunto é forma de recebimento na frente de caixa?|Dinheiro, cartão (TEF) e PIX||Boleto, NFS-e e MDF-e;Retorno, CT-e e SAT;Pedido, Parcelamento e Grade
+Qual documento fiscal é emitido na venda de balcão?|NFC-e ou cupom SAT||NF-e de entrada ou CT-e;NFS-e ou MDF-e;Boleto ou duplicata
+O que significa TEF?|Integração com operadoras de cartão||Transferência eletrônica de fornecedores;Terminal eletrônico fiscal;Tabela de encargos financeiros
+O que se faz no fim do dia no caixa?|Fechamento e conferência||Emissão do SPED;Importação do retorno bancário;Cadastro de novos produtos
+Por onde um pedido pode ser criado?|ERP, portal web ou app do vendedor||Somente pelo ERP desktop;Apenas pelo app de coleta de leite;Só pelo GerNotas
+Nos nomes das telas, o que a letra L indica?|Listagem||Manutenção;Relatório;Configuração
+E a letra M?|Manutenção ou Movimento||Listagem;Relatório ou Rascunho;Configuração ou Cadastro
+E a letra R?|Relatório||Listagem;Manutenção;Configuração
+E a letra C?|Configuração||Listagem;Relatório;Movimento
+CHEFE: o prefixo PD (como em LPD) indica qual domínio?|Pedidos||Produtos;Pagamentos;Pessoas`,
+`Quando a SEFAZ aprova a nota, o que acontece no sistema?|Baixa estoque e gera títulos a receber||Só gera o boleto;Cancela o pedido de venda;Gera contas a pagar ao fornecedor
+O que a entrada de mercadorias gera?|Atualiza estoque e cria contas a pagar||Baixa estoque e cria contas a receber;Apenas emite a NF-e;Gera o MDF-e
+O que faz o retorno bancário?|Baixa automática dos títulos pagos||Gera os boletos da carteira;Emite nota de serviço;Cadastra novos bancos
+Para quantos bancos o sistema gera boletos?|Mais de 18||Apenas 3;Cerca de 5;Somente o banco padrão
+O plano de contas contábil tem a ver com contas a pagar e a receber?|Não|São cadastros independentes.
+Qual documento é o manifesto que acompanha a carga?|MDF-e|O CT-e é o conhecimento de transporte.|CT-e;NFS-e;NFC-e
+Para que serve a NFS-e?|Notas de serviço às prefeituras||Notas de produtos à SEFAZ;Notas de transporte à ANTT;Vendas no balcão
+Para onde as compensações financeiras alimentam dados?|O Contábil||O Estoque;O Portal Web;O módulo de laticínios
+O que o cadastro de Parcelamento define?|Como a venda é dividida em parcelas||Quais bancos emitem boleto;Qual o prazo de entrega;Quem é o vendedor
+CHEFE: qual a ordem correta?|Pedido, Faturamento, Nota aprovada, Título||Nota aprovada, Pedido, Faturamento, Título;Título, Pedido, Nota aprovada, Faturamento;Faturamento, Pedido, Título, Nota aprovada`,
+`Quais são os dois segmentos verticais de destaque?|Laticínios e recapadoras (Vulcano)||Frigoríficos e usinas de açúcar;Agropecuária e transportadoras;Farmácias e supermercados
+Qual app Android registra coletas de leite?|CaptacaoMobile||VulcanoColeta;LeiteWeb;ColetaFácil
+Como os dados do app de leite chegam ao ERP?|Via API REST, no mesmo banco||Por arquivo XML enviado por e-mail;Por digitação manual no desktop;Por banco separado sincronizado à noite
+Qual app registra a coleta de pneus nos clientes?|VulcanoColeta||CaptacaoMobile;VulcanoProd;GerNotas
+Qual app acompanha a produção da recapagem etapa a etapa?|VulcanoProd||VulcanoColeta;CaptacaoMobile;Portal Web
+O que é a Ordem de Carregamento na recapagem?|Permite rastrear a etapa de produção||Emite a nota de remessa;Calcula a comissão do vendedor;Define o frete do pneu
+Qual a situação do pneu antes de virar nota de venda?|Pronto para faturamento||Em recusa de laudo;Aguardando coleta;Pedido cancelado
+De que tipos pode ser o laudo técnico?|Garantia ou recusa||Apenas aprovação;Orçamento ou cobrança;Venda ou devolução
+Quem recebe o pagamento consolidado na captação de leite?|Os produtores rurais||Os motoristas da coleta;Os vendedores externos;As prefeituras
+CHEFE: qual o caminho do pneu?|Coleta, OS, produção por etapas, faturamento, entrega||Faturamento, coleta, OS, entrega, produção;Entrega, laudo, coleta, faturamento;Produção, coleta, entrega, OS`,
+`O que faz o GerNotas?|Transmite NF-e e NFC-e pendentes em segundo plano||Imprime etiquetas de produto;Gera o retorno bancário;Consulta CEP dos clientes
+O GerNotas depende de alguém usando o ERP?|Não
+Que siglas representam a reforma tributária contemplada?|IBS e CBS||ICMS e IPI;PIS e COFINS;ISS e IOF
+Uma mudança no motor fiscal compartilhado afeta quem?|ERP e GerNotas||Somente o ERP;Apenas os apps Android;Só o portal web
+Que serviço consulta CEP?|ViaCEP||SCPC;Firebase;GerNotas
+Que serviço consulta crédito?|SCPC||ViaCEP;Firebase;SEFAZ
+O que o sistema envia por e-mail ao cliente?|Notas e boletos||Somente senhas de usuário;Laudos técnicos de pneus;Arquivos do SPED
+Que serviço o app mobile web usa?|Firebase||ViaCEP;SCPC;Spring Boot
+Para quem serve o Portal Web?|Clientes e parceiros||Apenas o setor de TI;Somente o contador;Exclusivamente vendedores internos
+CHEFE: qual conjunto só tem documentos fiscais eletrônicos?|NF-e, NFC-e, CT-e e MDF-e||NF-e, DARF, GPS e CAGED;Boleto, NF-e, TEF e PIX;SPED, ViaCEP, SCPC e Firebase`,
+`Qual banco de dados é usado?|Firebird||PostgreSQL;MySQL;SQL Server
+Como as telas conversam entre si?|Pelos dados gravados no banco||Por chamadas diretas entre telas;Por arquivos XML;Por memória compartilhada
+Na passagem de pedido para nota, quem grava e quem lê?|Pedido grava, rotina de nota lê||Nota grava, pedido lê;Ambos gravam sem ler;A tela do pedido chama a nota
+Em que tecnologia estão as APIs?|Java 17 com Spring Boot||Node.js com Express;.NET 8;Python com Django
+Que tecnologia compõe o portal web?|Angular com Ionic||React com Next.js;Vue com Quasar;Delphi com VCL
+Os apps Android são nativos ou híbridos?|Nativos, em Java||Híbridos, em Flutter;Web, em Angular;Nativos, em Swift
+Quantos módulos o desktop tem, aproximadamente?|Cerca de 1.635||Cerca de 50;Cerca de 300;Mais de 10.000
+O repositório contém o banco de produção de cada cliente.|Falso|Só a estrutura e os scripts.
+Quais os dois motores de relatório?|ReportBuilder e FastReport||Crystal Reports e JasperReports;Power BI e Metabase;Excel e Word
+CHEFE: o que fica fora do repositório?|Banco do cliente, serviços externos e infra de produção||Scripts, migrations e estrutura;APIs, apps e portal web;Código do desktop e relatórios`,
+`Qual é a fonte da verdade sobre dados e estrutura?|O próprio banco||A documentação de schema;O manual do usuário;O repositório de código
+A documentação de schema pode ser verdade absoluta?|Não|Pode estar desatualizada.
+Que tipo de consulta a ferramenta oficial aceita?|Somente leitura||Leitura e escrita;Apenas escrita;Somente DDL
+A ferramenta consegue gravar por engano?|Não|A transação é somente leitura e o servidor recusa escrita.
+Qual o limite padrão de linhas na resposta?|500||50;100;5.000
+Qual o tempo máximo padrão da consulta?|30 segundos||5 segundos;10 minutos;Sem limite
+Como vêm os valores decimais na resposta?|Texto, para preservar precisão||Ponto flutuante;Inteiro arredondado;Notação científica
+O campo “total” é o total da consulta?|Não|É só a quantidade de linhas da resposta.
+Consulta com zero linhas é erro?|Não|É sucesso.
+CHEFE: qual ferramenta usar?|A do repositório|A instalada na máquina pode estar em outra versão.|A instalada na máquina;A de qualquer colega;A mais recente da internet`,
+`NUMERIC e DECIMAL são tipos próprios?|Não|São máscaras sobre inteiros com escala.
+Qual o teto do domínio de percentual (3 dígitos, 2 casas)?|327,67||999,99;99,99;655,35
+Por que esse teto?|Guardado em inteiro de 2 bytes||Limitado pelo dialeto 3;Imposto pela interface do ERP;Definido pelo layout do relatório
+Comissão pode passar de 9,99?|Sim|Há comissões acima de 300% na base.
+O que define o teto?|O armazenamento (2, 4 ou 8 bytes)||A precisão declarada;A máscara de exibição;O dialeto do banco
+Quando o erro de estouro aparece?|Em tempo de execução||Na criação da tabela;Ao rodar a migration;Ao abrir o banco
+Pode-se usar ponto flutuante para dinheiro?|Não|O padrão é numérico exato.
+Qual versão do Firebird e dialeto na base de desenvolvimento?|Firebird 5.0.1, dialeto 3||Firebird 2.5, dialeto 1;Firebird 3.0, dialeto 2;PostgreSQL 15, dialeto 3
+Como proteger divisão cuja base pode ser zero?|Tratar o zero e definir valor alternativo||Ignorar, o banco resolve;Trocar para ponto flutuante;Deixar o erro estourar para o usuário
+CHEFE: somar muitas linhas de um campo pequeno pode causar?|Estouro|Amplie o tipo antes de somar.|Lentidão no servidor;Perda de índices;Troca de dialeto`,
+`Como se altera a estrutura do banco?|Por migration versionada||Por script solto no ambiente;Direto na ferramenta de banco;Editando a documentação das tabelas
+Pode-se alterar estrutura “na mão” em ferramenta de banco?|Não
+Os arquivos de documentação das tabelas são o schema vivo?|Não|São documentação gerada.
+Qual o primeiro passo de uma nova alteração?|Criar o esqueleto da migration||Editar o arquivo de documentação;Rodar o script no banco de produção;Pedir autorização ao cliente
+Cargas iniciais (seed) vão por onde?|Também por migration||Por inserts manuais;Por importação direta no banco;Pelo GerNotas
+O que os comandos que escrevem no banco exigem?|Autorização explícita||Nenhuma, são comandos de leitura;Apenas o horário comercial;Somente o ambiente de produção
+O que identifica a origem de uma migration?|Número do chamado e autor||Data e hora da execução;Nome do banco e senha;Versão do Firebird
+De onde vêm os ambientes (dev, qualidade)?|Arquivo de configuração do repositório||Variáveis do Windows;Tela do ERP;Banco de produção de cada cliente
+A ferramenta diz “comando desconhecido”. O que fazer?|Atualizar a ferramenta do repositório||Usar a ferramenta instalada na máquina;Rodar o script na mão;Ignorar o aviso
+CHEFE: por que migration e não script solto?|Rastreabilidade, repetibilidade e mesma mudança em todos os ambientes||Porque é mais rápido de digitar;Porque dispensa o chamado;Porque evita a revisão`,
+`Antes de criar uma base nova, o que definir?|Ambiente, versão do Firebird, dialeto e cadastros||Só o nome do cliente;Apenas a cor do tema;Somente o CNPJ e a logo
+Qual a ordem de carga entre pessoa, município e endereço?|Município e pessoa, depois endereço||Endereço, depois pessoa e município;Pessoa, depois endereço e município;Tudo ao mesmo tempo, sem ordem
+Quais pré-requisitos tem um item?|Grupo e NCM cadastrados||Pessoa e vendedor cadastrados;Plano de contas e banco;Município e CEP
+Quais pré-requisitos tem uma conta a receber?|Pessoa dona do título (CPF ou CNPJ)||Nota fiscal aprovada;Vendedor e comissão;Pedido de venda faturado
+Qual o produto final de uma importação de legado?|Script revisável e relatório de qualidade||Base pronta gravada no cliente;Apenas um backup do legado;Somente um log de erros
+A ferramenta de importação grava direto no banco do cliente?|Não|O implantador revisa e executa.
+O que fazer com coluna ambígua no arquivo do cliente?|Perguntar ao implantador||Supor a coluna mais provável;Descartar a coluna;Gravar como texto livre
+Que cuidado ter com os arquivos de origem?|Têm dados pessoais reais||São sempre anonimizados;Podem ir direto ao repositório;Não exigem cuidado
+Ao descobrir regra nova sobre uma tabela, o que fazer?|Propor registrar na documentação do schema||Guardar só na memória;Alterar o banco direto;Ignorar, já é conhecido
+CHEFE FINAL: nova base para recapadora, comissão até 315%. Como proceder?|Conferir o tipo do campo (teto 327,67), criar por migration com chamado e validar por consulta somente leitura||Trocar para ponto flutuante e rodar script direto no banco;Limitar a comissão a 9,99 no cadastro;Criar o campo manualmente na base do cliente`].map(s=>s.split("\n").map(l=>{const f=l.split("|");return{q:f[0],a:f[1],e:f[2]||"",d:f[3]?f[3].split(";"):null}}));
+
+const $=document.getElementById("app"),V=5;
+const sh=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let S,db=null,RK,rkLocal=false,useLocal=false,LOC=[];
+try{LOC=JSON.parse(localStorage.getItem("rk")||"[]")}catch(e){}
+const fresh=()=>S={p:0,i:0,lives:V,score:0,f5:3,sk:3,ans:false,hid:[],opts:[],hits:0,tot:0,view:"intro",saved:false,won:false};
+fresh();
+
+if(window.claude&&claude.use)claude.use("db").then(d=>{db=d;loadRank()}).catch(()=>loadRank());
+setTimeout(()=>{if(RK===undefined&&!db){useLocal=true;loadRank()}},4000);
+const locRank=()=>LOC.slice().sort((a,b)=>b.score-a.score).slice(0,10);
+async function loadRank(){
+  if(!db||useLocal){RK=locRank();rkLocal=true}
+  else try{const s=await db.collection("ranking").orderBy("score","desc").limit(10).get();RK=s.docs.map(d=>d.data());rkLocal=false}catch(e){RK=locRank();rkLocal=true}
+  if(S.view=="intro"||(S.view=="end"&&S.saved))show();
+}
+function rankHTML(){
+  if(RK===undefined)return"<p>Carregando ranking…</p>";
+  if(!RK||!RK.length)return"<p>Ninguém no ranking ainda. Seja o primeiro!</p>"+(rkLocal?"<p><small>Ranking salvo só neste navegador.</small></p>":"");
+  return(rkLocal?"<p><small>Ranking salvo só neste navegador.</small></p>":"")+`<table><tr><th>#</th><th>Nome</th><th>Pontos</th></tr>${RK.map((r,k)=>`<tr><td>${k+1}</td><td>${esc(r.name)} <small>· fase ${esc(r.phase)}</small></td><td>${esc(r.score)}</td></tr>`).join("")}</table>`;
+}
+async function save(){
+  const n=document.getElementById("nm").value.trim().slice(0,20);
+  if(!n){document.getElementById("msg").textContent="Digite um nome.";return}
+  if(S.saved)return;
+  const r={name:n,score:S.score,hits:S.hits,phase:S.p+1,t:Date.now()};
+  let ok=false;
+  if(db&&!useLocal)try{await db.collection("ranking").add(r);ok=true}catch(e){}
+  if(!ok){useLocal=true;LOC.push(r);try{localStorage.setItem("rk",JSON.stringify(LOC))}catch(e){}}
+  S.saved=true;await loadRank();show();
+}
+function opts(q){
+  if(q.a=="Falso"||q.a=="Verdadeiro")return["Verdadeiro","Falso"];
+  if(q.a=="Sim"||q.a=="Não")return["Sim","Não"];
+  return sh([q.a,...q.d]);
+}
+function head(){
+  return`<div class="card"><div class="top"><span>Fase ${S.p+1}/10 · ${N[S.p]}</span><span>⭐ ${S.score} pts</span><span>${"❤️".repeat(S.lives)}${"🖤".repeat(V-S.lives)}</span></div><div class="bar"><i style="width:${((S.p*10+S.i)/100)*100}%"></i></div></div>`;
+}
+function show(){
+  if(S.view=="intro"){
+    $.innerHTML=`<div class="card"><h1>🧭 A Jornada do Implantador</h1><p>100 perguntas sobre o JunsoftERP, em 10 fases, do cadastro básico até criar uma base nova via banco.</p><p>A fase N vale N pontos por pergunta e o Chefe (a 10ª de cada fase) vale o dobro. Você tem <b>5 vidas para a jornada inteira</b>, 3 coringas de 50/50 e 3 de pular. No fim, registre seu nome no ranking.</p><button class="b" onclick="S.view='q';nq()">Começar</button></div><div class="card"><h2>🏆 Top 10</h2>${rankHTML()}</div>`;return}
+  if(S.view=="phase"){
+    $.innerHTML=`<div class="card"><h2>✅ Fase ${S.p+1} concluída</h2><p>Patente: <b>${N[S.p]}</b></p><p class="big">${S.score} pts</p><p>Vidas restantes: ${"❤️".repeat(S.lives)}</p><button class="b" onclick="S.p++;S.i=0;S.view='q';nq()">Próxima fase: ${N[S.p+1]}</button></div>`;return}
+  if(S.view=="end"){
+    $.innerHTML=`<div class="card"><h2>${S.won?"🏆 Jornada concluída! Você é Lenda da Implantação":"💥 Fim das vidas na fase "+(S.p+1)+" ("+N[S.p]+")"}</h2><p class="big">${S.score} pts</p><p>Acertos: ${S.hits} de ${S.tot} respondidas</p>`+
+    (S.saved?"":`<p>Registre seu nome no ranking:</p><input id="nm" maxlength="20" placeholder="Seu nome"> <button class="b" onclick="save()">Salvar</button><p id="msg" class="fb"></p>`)+
+    `<button class="g" onclick="fresh();show()">Jogar de novo</button></div><div class="card"><h2>🏆 Top 10</h2>${rankHTML()}</div>`;
+    if(RK===undefined)loadRank();return}
+  const q=D[S.p][S.i],boss=S.i==9,pts=(S.p+1)*(boss?2:1);
+  $.innerHTML=head()+`<div class="card">${boss?'<div class="boss">⚔️ CHEFE · vale em dobro</div>':""}<div class="top"><span>${T[S.p]} · pergunta ${S.i+1}/10</span><span>vale ${pts} pt${pts>1?"s":""}</span></div><h2>${q.q.replace("CHEFE FINAL: ","").replace("CHEFE: ","")}</h2>`+
+  S.opts.map((o,k)=>`<button class="o${S.hid.includes(k)?" off":""}" ${S.ans||S.hid.includes(k)?"disabled":""} onclick="pick(${k})">${o}</button>`).join("")+
+  `<div id="fb" class="fb"></div><div><button class="g" ${S.ans||S.f5<1||S.opts.length<4?"disabled":""} onclick="fifty()">50/50 (${S.f5})</button> <button class="g" ${S.ans||S.sk<1?"disabled":""} onclick="skip()">Pular (${S.sk})</button></div></div>`;
+}
+function nq(){S.opts=opts(D[S.p][S.i]);S.ans=false;S.hid=[];show()}
+function pick(k){
+  const q=D[S.p][S.i],ok=S.opts[k]==q.a,pts=(S.p+1)*(S.i==9?2:1);
+  S.ans=true;S.tot++;
+  if(ok){S.score+=pts;S.hits++}else S.lives--;
+  show();
+  document.querySelectorAll(".o").forEach((b,j)=>{if(S.opts[j]==q.a)b.classList.add("ok");else if(j==k)b.classList.add("er")});
+  document.getElementById("fb").innerHTML=(ok?"✅ Correto! +"+pts+" pts. ":"❌ Resposta: <b>"+q.a+"</b>. ")+q.e+`<br><button class="b" onclick="next()">Continuar</button>`;
+}
+function fifty(){
+  const q=D[S.p][S.i];S.f5--;
+  S.hid=sh(S.opts.map((o,k)=>k).filter(k=>S.opts[k]!=q.a)).slice(0,2);show();
+}
+function skip(){S.sk--;next(true)}
+function next(sk){
+  if(!sk&&S.lives==0){S.view="end";return show()}
+  S.i++;
+  if(S.i>9){if(S.p==9){S.won=true;S.view="end"}else S.view="phase";return show()}
+  nq();
+}
+const isDark=()=>{const t=document.documentElement.dataset.theme;return t?t=="dark":matchMedia("(prefers-color-scheme: dark)").matches};
+function ic(){document.getElementById("tg").textContent=isDark()?"☀️":"🌙"}
+function tgl(){const t=isDark()?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("th",t)}catch(e){}ic()}
+try{const t=localStorage.getItem("th");if(t)document.documentElement.dataset.theme=t}catch(e){}
+ic();
+show();
+</script>
+</body>
+</html>

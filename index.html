@@ -132,35 +132,41 @@ Que cuidado ter com os arquivos de origem?|Têm dados pessoais reais||São sempr
 Ao descobrir regra nova sobre uma tabela, o que fazer?|Propor registrar na documentação do schema||Guardar só na memória;Alterar o banco direto;Ignorar, já é conhecido
 CHEFE FINAL: nova base para recapadora, comissão até 315%. Como proceder?|Conferir o tipo do campo (teto 327,67), criar por migration com chamado e validar por consulta somente leitura||Trocar para ponto flutuante e rodar script direto no banco;Limitar a comissão a 9,99 no cadastro;Criar o campo manualmente na base do cliente`].map(s=>s.split("\n").map(l=>{const f=l.split("|");return{q:f[0],a:f[1],e:f[2]||"",d:f[3]?f[3].split(";"):null}}));
 
-const $=document.getElementById("app"),V=5;
+// ===== CONFIGURAÇÃO DO RANKING ONLINE =====
+// Cole aqui o endereço do seu Firebase Realtime Database (sem barra no fim), ex.:
+// const FB="https://meu-quiz-default-rtdb.firebaseio.com";
+// Vazio = o ranking fica salvo só neste navegador.
+const FB="";
+const $=document.getElementById("app"),V=5,LIM=45;
 const sh=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-let S,db=null,RK,rkLocal=false,useLocal=false,LOC=[];
+const fmt=s=>{s=Math.round(s);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
+const cmp=(a,b)=>b.score-a.score||a.time-b.time;
+let S,RK,rkLocal=false,LOC=[],tmr=null;
 try{LOC=JSON.parse(localStorage.getItem("rk")||"[]")}catch(e){}
-const fresh=()=>S={p:0,i:0,lives:V,score:0,f5:3,sk:3,ans:false,hid:[],opts:[],hits:0,tot:0,view:"intro",saved:false,won:false};
+const fresh=()=>S={p:0,i:0,lives:V,score:0,ans:false,opts:[],hits:0,tot:0,view:"intro",saved:false,won:false,time:0,t0:0,left:LIM};
 fresh();
-
-if(window.claude&&claude.use)claude.use("db").then(d=>{db=d;loadRank()}).catch(()=>loadRank());
-setTimeout(()=>{if(RK===undefined&&!db){useLocal=true;loadRank()}},4000);
-const locRank=()=>LOC.slice().sort((a,b)=>b.score-a.score).slice(0,10);
+const url=()=>FB.replace(/\/$/,"")+"/ranking.json";
 async function loadRank(){
-  if(!db||useLocal){RK=locRank();rkLocal=true}
-  else try{const s=await db.collection("ranking").orderBy("score","desc").limit(10).get();RK=s.docs.map(d=>d.data());rkLocal=false}catch(e){RK=locRank();rkLocal=true}
+  const loc=()=>{RK=LOC.slice().sort(cmp).slice(0,10);rkLocal=true};
+  if(FB){try{const r=await fetch(url());if(!r.ok)throw 0;const o=await r.json()||{};RK=Object.values(o).sort(cmp).slice(0,10);rkLocal=false}catch(e){loc()}}
+  else loc();
   if(S.view=="intro"||(S.view=="end"&&S.saved))show();
 }
 function rankHTML(){
   if(RK===undefined)return"<p>Carregando ranking…</p>";
-  if(!RK||!RK.length)return"<p>Ninguém no ranking ainda. Seja o primeiro!</p>"+(rkLocal?"<p><small>Ranking salvo só neste navegador.</small></p>":"");
-  return(rkLocal?"<p><small>Ranking salvo só neste navegador.</small></p>":"")+`<table><tr><th>#</th><th>Nome</th><th>Pontos</th></tr>${RK.map((r,k)=>`<tr><td>${k+1}</td><td>${esc(r.name)} <small>· fase ${esc(r.phase)}</small></td><td>${esc(r.score)}</td></tr>`).join("")}</table>`;
+  const note=rkLocal?`<p><small>${FB?"Sem conexão com o ranking online; mostrando o salvo neste navegador.":"Ranking salvo só neste navegador."}</small></p>`:"";
+  if(!RK.length)return"<p>Ninguém no ranking ainda. Seja o primeiro!</p>"+note;
+  return note+`<table><tr><th>#</th><th>Nome</th><th>Pontos</th><th>Tempo</th></tr>${RK.map((r,k)=>`<tr><td>${k+1}</td><td>${esc(r.name)} <small>· fase ${esc(r.phase)}</small></td><td>${esc(r.score)}</td><td>${fmt(r.time||0)}</td></tr>`).join("")}</table><p><small>Mais pontos fica na frente; em empate de pontos, vence o menor tempo total.</small></p>`;
 }
 async function save(){
   const n=document.getElementById("nm").value.trim().slice(0,20);
   if(!n){document.getElementById("msg").textContent="Digite um nome.";return}
   if(S.saved)return;
-  const r={name:n,score:S.score,hits:S.hits,phase:S.p+1,t:Date.now()};
+  const r={name:n,score:S.score,time:Math.round(S.time),hits:S.hits,phase:S.p+1,t:Date.now()};
   let ok=false;
-  if(db&&!useLocal)try{await db.collection("ranking").add(r);ok=true}catch(e){}
-  if(!ok){useLocal=true;LOC.push(r);try{localStorage.setItem("rk",JSON.stringify(LOC))}catch(e){}}
+  if(FB)try{ok=(await fetch(url(),{method:"POST",body:JSON.stringify(r)})).ok}catch(e){}
+  if(!ok){LOC.push(r);try{localStorage.setItem("rk",JSON.stringify(LOC))}catch(e){}}
   S.saved=true;await loadRank();show();
 }
 function opts(q){
@@ -169,39 +175,45 @@ function opts(q){
   return sh([q.a,...q.d]);
 }
 function head(){
-  return`<div class="card"><div class="top"><span>Fase ${S.p+1}/10 · ${N[S.p]}</span><span>⭐ ${S.score} pts</span><span>${"❤️".repeat(S.lives)}${"🖤".repeat(V-S.lives)}</span></div><div class="bar"><i style="width:${((S.p*10+S.i)/100)*100}%"></i></div></div>`;
+  return`<div class="card"><div class="top"><span>Fase ${S.p+1}/10 · ${N[S.p]}</span><span>⭐ ${S.score} pts</span><span>⏱ ${fmt(S.time)}</span><span>${"❤️".repeat(S.lives)}${"🖤".repeat(V-S.lives)}</span></div><div class="bar"><i style="width:${S.p*10+S.i}%"></i></div></div>`;
 }
 function show(){
   if(S.view=="intro"){
-    $.innerHTML=`<div class="card"><h1>🧭 A Jornada do Implantador</h1><p>100 perguntas sobre o JunsoftERP, em 10 fases, do cadastro básico até criar uma base nova via banco.</p><p>A fase N vale N pontos por pergunta e o Chefe (a 10ª de cada fase) vale o dobro. Você tem <b>5 vidas para a jornada inteira</b>, 3 coringas de 50/50 e 3 de pular. No fim, registre seu nome no ranking.</p><button class="b" onclick="S.view='q';nq()">Começar</button></div><div class="card"><h2>🏆 Top 10</h2>${rankHTML()}</div>`;return}
+    $.innerHTML=`<div class="card"><h1>🧭 A Jornada do Implantador</h1><p>100 perguntas sobre o JunsoftERP, em 10 fases, do cadastro básico até criar uma base nova via banco.</p><p>A fase N vale N pontos por pergunta e o Chefe (a 10ª de cada fase) vale o dobro. Você tem <b>5 vidas para a jornada inteira</b> e <b>45 segundos por pergunta</b>; se o tempo acabar, conta como erro. No fim, registre seu nome no ranking: mais pontos fica na frente e, em empate, vence quem gastou menos tempo.</p><button class="b" onclick="S.view='q';nq()">Começar</button></div><div class="card"><h2>🏆 Top 10</h2>${rankHTML()}</div>`;return}
   if(S.view=="phase"){
-    $.innerHTML=`<div class="card"><h2>✅ Fase ${S.p+1} concluída</h2><p>Patente: <b>${N[S.p]}</b></p><p class="big">${S.score} pts</p><p>Vidas restantes: ${"❤️".repeat(S.lives)}</p><button class="b" onclick="S.p++;S.i=0;S.view='q';nq()">Próxima fase: ${N[S.p+1]}</button></div>`;return}
+    $.innerHTML=`<div class="card"><h2>✅ Fase ${S.p+1} concluída</h2><p>Patente: <b>${N[S.p]}</b></p><p class="big">${S.score} pts</p><p>Tempo total: ${fmt(S.time)} · Vidas: ${"❤️".repeat(S.lives)}</p><button class="b" onclick="S.p++;S.i=0;S.view='q';nq()">Próxima fase: ${N[S.p+1]}</button></div>`;return}
   if(S.view=="end"){
-    $.innerHTML=`<div class="card"><h2>${S.won?"🏆 Jornada concluída! Você é Lenda da Implantação":"💥 Fim das vidas na fase "+(S.p+1)+" ("+N[S.p]+")"}</h2><p class="big">${S.score} pts</p><p>Acertos: ${S.hits} de ${S.tot} respondidas</p>`+
+    $.innerHTML=`<div class="card"><h2>${S.won?"🏆 Jornada concluída! Você é Lenda da Implantação":"💥 Fim das vidas na fase "+(S.p+1)+" ("+N[S.p]+")"}</h2><p class="big">${S.score} pts</p><p>Tempo total: ${fmt(S.time)} · Acertos: ${S.hits} de ${S.tot}</p>`+
     (S.saved?"":`<p>Registre seu nome no ranking:</p><input id="nm" maxlength="20" placeholder="Seu nome"> <button class="b" onclick="save()">Salvar</button><p id="msg" class="fb"></p>`)+
-    `<button class="g" onclick="fresh();show()">Jogar de novo</button></div><div class="card"><h2>🏆 Top 10</h2>${rankHTML()}</div>`;
+    `<button class="g" onclick="fresh();show();loadRank()">Jogar de novo</button></div><div class="card"><h2>🏆 Top 10</h2>${rankHTML()}</div>`;
     if(RK===undefined)loadRank();return}
   const q=D[S.p][S.i],boss=S.i==9,pts=(S.p+1)*(boss?2:1);
-  $.innerHTML=head()+`<div class="card">${boss?'<div class="boss">⚔️ CHEFE · vale em dobro</div>':""}<div class="top"><span>${T[S.p]} · pergunta ${S.i+1}/10</span><span>vale ${pts} pt${pts>1?"s":""}</span></div><h2>${q.q.replace("CHEFE FINAL: ","").replace("CHEFE: ","")}</h2>`+
-  S.opts.map((o,k)=>`<button class="o${S.hid.includes(k)?" off":""}" ${S.ans||S.hid.includes(k)?"disabled":""} onclick="pick(${k})">${o}</button>`).join("")+
-  `<div id="fb" class="fb"></div><div><button class="g" ${S.ans||S.f5<1||S.opts.length<4?"disabled":""} onclick="fifty()">50/50 (${S.f5})</button> <button class="g" ${S.ans||S.sk<1?"disabled":""} onclick="skip()">Pular (${S.sk})</button></div></div>`;
+  $.innerHTML=head()+`<div class="card">${boss?'<div class="boss">⚔️ CHEFE · vale em dobro</div>':""}<div class="top"><span>${T[S.p]} · pergunta ${S.i+1}/10</span><span>vale ${pts} pt${pts>1?"s":""}</span><span id="tm">⏱ ${Math.ceil(S.left)}s</span></div><div class="bar"><i id="tb" style="width:${S.left/LIM*100}%;background:var(--er)"></i></div><h2>${q.q.replace("CHEFE FINAL: ","").replace("CHEFE: ","")}</h2>`+
+  S.opts.map((o,k)=>`<button class="o" ${S.ans?"disabled":""} onclick="pick(${k})">${o}</button>`).join("")+`<div id="fb" class="fb"></div></div>`;
 }
-function nq(){S.opts=opts(D[S.p][S.i]);S.ans=false;S.hid=[];show()}
+function startT(){
+  clearInterval(tmr);S.t0=Date.now();S.left=LIM;
+  tmr=setInterval(()=>{
+    S.left=Math.max(0,LIM-(Date.now()-S.t0)/1000);
+    const a=document.getElementById("tm"),b=document.getElementById("tb");
+    if(a)a.textContent="⏱ "+Math.ceil(S.left)+"s";if(b)b.style.width=(S.left/LIM*100)+"%";
+    if(S.left<=0)pick(-1);
+  },200);
+}
+function nq(){S.opts=opts(D[S.p][S.i]);S.ans=false;show();startT()}
 function pick(k){
-  const q=D[S.p][S.i],ok=S.opts[k]==q.a,pts=(S.p+1)*(S.i==9?2:1);
+  if(S.ans)return;
+  clearInterval(tmr);
+  const q=D[S.p][S.i],ok=k>=0&&S.opts[k]==q.a,pts=(S.p+1)*(S.i==9?2:1);
+  S.time+=Math.min(LIM,(Date.now()-S.t0)/1000);
   S.ans=true;S.tot++;
   if(ok){S.score+=pts;S.hits++}else S.lives--;
   show();
   document.querySelectorAll(".o").forEach((b,j)=>{if(S.opts[j]==q.a)b.classList.add("ok");else if(j==k)b.classList.add("er")});
-  document.getElementById("fb").innerHTML=(ok?"✅ Correto! +"+pts+" pts. ":"❌ Resposta: <b>"+q.a+"</b>. ")+q.e+`<br><button class="b" onclick="next()">Continuar</button>`;
+  document.getElementById("fb").innerHTML=(ok?"✅ Correto! +"+pts+" pts. ":(k<0?"⏰ Tempo esgotado. ":"❌ ")+"Resposta: <b>"+q.a+"</b>. ")+q.e+`<br><button class="b" onclick="next()">Continuar</button>`;
 }
-function fifty(){
-  const q=D[S.p][S.i];S.f5--;
-  S.hid=sh(S.opts.map((o,k)=>k).filter(k=>S.opts[k]!=q.a)).slice(0,2);show();
-}
-function skip(){S.sk--;next(true)}
-function next(sk){
-  if(!sk&&S.lives==0){S.view="end";return show()}
+function next(){
+  if(S.lives==0){S.view="end";return show()}
   S.i++;
   if(S.i>9){if(S.p==9){S.won=true;S.view="end"}else S.view="phase";return show()}
   nq();
@@ -210,8 +222,7 @@ const isDark=()=>{const t=document.documentElement.dataset.theme;return t?t=="da
 function ic(){document.getElementById("tg").textContent=isDark()?"☀️":"🌙"}
 function tgl(){const t=isDark()?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("th",t)}catch(e){}ic()}
 try{const t=localStorage.getItem("th");if(t)document.documentElement.dataset.theme=t}catch(e){}
-ic();
-show();
+ic();show();loadRank();
 </script>
 </body>
 </html>

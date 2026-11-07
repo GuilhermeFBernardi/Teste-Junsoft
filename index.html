@@ -18,7 +18,7 @@ textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--gold:#ffd23f;--silver:#d5dae3;--bronze:#e8935a}}
 :root[data-theme="dark"]{--gold:#ffd23f;--silver:#d5dae3;--bronze:#e8935a}
 .fm{font-size:13px}.crit{font-size:14px;color:var(--mu);margin:6px 0}.crit b{color:var(--tx)}
-.hof{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px;font-size:14px}.hof h2{font-size:1rem}.hw{margin-top:8px}.hw small{color:var(--mu)}
+.mode{display:flex;gap:8px;flex-wrap:wrap}.mode button{flex:1;min-width:180px}.tag{display:inline-block;border:1px solid var(--bd);border-radius:999px;padding:3px 9px;font-size:12px;color:var(--mu)}.feedback-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}.feedback-grid>div{background:var(--bg);border:1px solid var(--bd);border-radius:9px;padding:9px}.hof{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px;font-size:14px}.hof h2{font-size:1rem}.hw{margin-top:8px}.hw small{color:var(--mu)}
 @media(min-width:1180px){.hof{position:fixed;left:10px;top:10px;bottom:10px;width:210px;overflow:auto;margin:0}}
 .tg{display:block;margin:10px 16px 0 auto}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -145,6 +145,19 @@ Um faturamento parcial gera dúvida no financeiro: a nota deve criar títulos pe
 Uma nota de venda leva frete e vários produtos. O time fiscal pergunta como o valor do frete pode afetar o valor de cada item e a tributação. Explique o rateio e o ponto de conferência.~O frete pode ser rateado entre os itens conforme o critério adotado, compondo o valor dos itens e podendo afetar bases de cálculo conforme a regra tributária aplicável.~frete|ratea,rateio,distribu|item|valor,peso|base,calculo,tribut
 A empresa quer impedir que usuários alterem itens e emitam documentos com tributação desatualizada. Proponha uma regra de implantação de permissões e recálculo.~Restringir a permissão de alteração a perfis adequados e exigir a atualização ou recálculo dos tributos quando houver mudança que afete a operação.~permiss,perfil,acesso|restri,limita|recalcul,atualiza|tribut,imposto|alteracao,item
 Na reunião de go-live, o gestor pergunta como saber se uma implantação fiscal está realmente pronta. Defina os critérios de aceite para um teste completo de emissão.~O teste deve confirmar cadastro e parametrização, geração e assinatura do XML, transmissão, retorno fiscal e conferência dos efeitos esperados no processo, antes da produção.~cadastro,parametriz,configur|xml,assin|transmiss,sefaz|retorno,autoriz|teste,homologa|producao`)];
+// Casos adicionais N5: diagnóstico, decisão, impacto e validação de implantação.
+POOL[4].push(...ds(`
+No primeiro dia de produção, três usuários relatam rejeições diferentes na NF-e. Como organizar o diagnóstico sem alterar configurações aleatoriamente?~Separar cada rejeição, registrar código e mensagem, conferir XML e dados da operação, reproduzir em homologação quando possível, corrigir a causa específica e validar nova transmissão antes de liberar o fluxo.~rejeicao,mensagem,codigo|xml,dados|homologacao,teste|causa,diagnost|corrigir|validar,transmiss
+Uma filial nova será ativada no ERP e precisa emitir documentos fiscais. Monte uma sequência de implantação que reduza o risco de emissão incorreta.~Validar cadastro da filial, inscrições e endereço, certificado e permissões, ambiente e série, parâmetros fiscais e cadastros relacionados; testar operações representativas em homologação e aprovar checklist antes da produção.~filial,cadastro|inscricao,endereco|certificado,permiss|ambiente,serie|parametro,fiscal|homologacao,teste|checklist,producao
+Após uma atualização, o faturamento passou a calcular valores diferentes para um mesmo produto. Que evidências você coleta e como isola a causa?~Comparar operação, cliente, destino, natureza/CFOP, NCM, CST/CSOSN, parâmetros e versão; reproduzir o cenário com dados controlados, identificar a regra divergente e validar o resultado com responsável fiscal antes de liberar.~comparar,conferir|operacao,destino|ncm|cst,csosn|parametro,regra|reproduzir,teste|responsavel,fiscal|validar
+Uma NF-e foi autorizada, mas o pedido continua aberto e o estoque não refletiu a saída esperada. Como conduzir a análise?~Confirmar autorização e protocolo, conferir vínculo da nota com o pedido, itens e quantidades, status do processo e integrações/rotinas de estoque; corrigir somente após identificar a etapa que não foi concluída e testar a consistência.~autorizada,protocolo|vinculo,pedido|item,quantidade|status,processo|estoque|integracao,rotina|consistencia,validar
+O cliente solicita cancelar uma NF-e autorizada, mas a mercadoria já saiu e há movimentação financeira. Quais impactos precisam ser avaliados antes da ação?~Verificar prazo e hipótese legal de cancelamento, circulação da mercadoria, efeitos no estoque, financeiro e escrituração; alinhar com responsável fiscal e definir o procedimento documental adequado antes de executar.~prazo,hipotese,legal|circulacao,mercadoria|estoque|financeiro,titulo|escrituracao,fiscal|procedimento,validar
+Durante a implantação, o certificado digital vence na semana do go-live. Defina um plano preventivo e de contingência operacional.~Providenciar renovação, instalar ou disponibilizar o certificado correto, testar assinatura e transmissão em homologação, conferir validade e acesso; não iniciar produção sem validação e plano de escalonamento.~renovacao,validade|certificado,a1,a3|instalar,acesso|assinatura|homologacao,teste|go-live,producao|escalonamento
+A empresa quer importar XML de compra, mas os produtos e fornecedores ainda não estão padronizados. Como evitar entradas incorretas?~Conferir emitente e chave, mapear produtos e unidades, revisar NCM e dados fiscais, validar quantidades e valores e tratar divergências antes de confirmar a entrada e seus efeitos no estoque e financeiro.~xml,chave|fornecedor,emitente|produto,cadastro|unidade|ncm,fiscal|quantidade,valor|estoque|financeiro|divergencia
+Uma transportadora mudou o veículo e o motorista depois da emissão dos documentos da carga. O que o implantador deve orientar a equipe a conferir?~Identificar quais documentos de transporte foram emitidos, avaliar se os dados alterados exigem evento ou novo documento conforme regra aplicável, conferir vínculos da carga e validar a situação antes de liberar a viagem.~transportadora,veiculo,motorista|documentos,ct-e,mdf-e|evento,alteracao|vinculo,carga|regra,procedimento|validar,liberar
+No aceite final, o cliente afirma que “a nota saiu”, mas não consegue localizar o documento nos relatórios. Quais validações encerram corretamente o chamado de implantação?~Conferir chave, protocolo e situação autorizada, localizar o XML e DANFE, verificar filtros, empresa, período e permissões do relatório e confirmar os reflexos esperados nos módulos envolvidos; registrar evidências e aceite do cliente.~chave,protocolo|autorizada,situacao|xml,danfe|filtro,empresa,periodo|permissao,relatorio|reflexo,modulos|evidencia,aceite
+Uma parametrização fiscal foi alterada diretamente em produção para resolver uma urgência. Como tratar a mudança e reduzir o risco de recorrência?~Registrar a alteração e seu responsável, avaliar impactos, comparar com ambiente de testes, documentar a regra, validar cenários afetados com o fiscal e formalizar aprovação e plano de reversão antes de consolidar o ajuste.~registrar,documentar|alteracao,producao|impacto|ambiente,teste|validar,cenarios|fiscal,aprovacao|reversao,rollback
+`));
 // ===== VARIAÇÕES: perguntas parecidas, mas com respostas diferentes =====
 const DESC=POOL[0].map(q=>{const m=q.q.match(/^Qual módulo (.+)\?$/);return m?{n:q.a,d:m[1][0].toUpperCase()+m[1].slice(1),q}:null}).filter(Boolean);
 DESC.forEach(x=>{x.q.t={q:`Qual descrição corresponde ao módulo ${x.n}?`,a:x.d,d:DESC.filter(y=>y!=x).map(y=>y.d)}});
@@ -200,7 +213,7 @@ const FISCAL_Q=[
 const markAudit=q=>{if(OFFICIAL_Q.some(k=>q.q.startsWith(k)))q.src="oficial";else if(FISCAL_Q.some(k=>q.q.startsWith(k)))q.src="fiscal";else if(!q.o&&q.q)q.src="interno";if(q.t)q.t.src=q.src;return q};
 POOL.forEach(pl=>pl.forEach(markAudit));
 
-const levelNeed=q=>Math.ceil(q.g.length*((S&&S.p===2)?.70:(S&&S.p===3)?.80:.90)-1e-9);
+const levelNeed=q=>Math.ceil(q.g.length*((S&&S.p===2)?.70:(S&&S.p===3)?.80:(S&&S.p===4)?.90:.60)-1e-9);
 const NV=["N1","N2","N3","N4","N5"];
 // ===== CONFIGURAÇÃO (Firebase) =====
 const FB="https://teste-junsoft-default-rtdb.firebaseio.com";
@@ -225,7 +238,7 @@ try{U=JSON.parse(localStorage.getItem("u")||"null")}catch(e){}
 // cada jogador recebe um sorteio próprio (por conta + dia): outras perguntas, outra ordem, outras variações e alternativas
 const mk=w=>w.d?{...w,o:sh([w.a,...sh(w.d).slice(0,4)])}:w;
 const build=()=>POOL.map(pl=>sh(pl).slice(0,10).map(q=>mk(q.t&&rng()<.5?q.t:q)));
-const fresh=seed=>{rng=seed?mul(seed):Math.random;G=build();S={p:0,i:0,lives:V,score:0,ans:false,hits:0,tot:0,view:"intro",saved:false,won:false,time:0,t0:0,left:60,w:0,c:99,txt:"",st:0}};
+const fresh=seed=>{rng=seed?mul(seed):Math.random;G=build();S={p:0,i:0,lives:V,score:0,ans:false,hits:0,tot:0,view:"intro",saved:false,won:false,time:0,t0:0,left:60,w:0,c:99,txt:"",st:0,mode:"cert",startedAt:0,attempts:0}};
 fresh();
 const need=q=>levelNeed(q);
 // validação automática: cada grupo é um conceito (sinônimos); N3 exige 70%, N4 80% e N5 90% dos conceitos
@@ -298,54 +311,55 @@ function rankHTML(){
   if(RK===undefined)return"<p>Carregando ranking…</p>";
   const note=rkLocal?`<p><small>${FB?"Sem conexão com o ranking online; mostrando o salvo neste navegador.":"Ranking salvo só neste navegador."}</small></p>`:"";
   if(!RK.length)return`<p>Ninguém no ranking de hoje ainda. Seja o primeiro!</p>`+note;
-  return note+`<table><tr><th>#</th><th>Nome</th><th>Pontos</th><th>Tempo</th></tr>${RK.map((r,k)=>`<tr class="${k<3?"m"+(k+1):""}"><td>${k<3?MED[k]:k+1}</td><td>${esc(r.name)} <small>· ${esc(r.phase)}</small></td><td>${esc(r.score)}</td><td>${fmt(r.time||0)}</td></tr>`).join("")}</table><p><small>Mais pontos fica na frente; em empate, vence o menor tempo total.</small></p>`;
+  return note+`<table><tr><th>#</th><th>Nome</th><th>Pontos</th><th>Tempo</th></tr>${RK.map((r,k)=>`<tr class="${k<3?"m"+(k+1):""}"><td>${k<3?MED[k]:k+1}</td><td>${esc(r.name)} <small>· ${esc(r.phase)}</small></td><td>${Number(r.score).toFixed(1)}</td><td>${fmt(r.time||0)}</td></tr>`).join("")}</table><p><small>Pontuação ponderada: 70% conhecimento, 20% acertos e 10% eficiência de tempo; em empate, vence o menor tempo total.</small></p>`;
 }
 function hofHTML(){
   const rows=HF.filter(h=>h.t.length);
   return`<aside class="hof"><h2>🏅 Últimos dias</h2>${rows.length?rows.map(h=>`<div class="hw"><b>${dm(h.w)}</b>${h.t.map((r,k)=>`<div class="m${k+1}">${MED[k]} ${esc(r.name)} <small>${esc(r.score)}</small></div>`).join("")}</div>`).join(""):"<p><small>Ainda sem dias anteriores.</small></p>"}</aside>`;
 }
 async function save(){
+  if(S.mode==="train")return;
   const n=document.getElementById("nm").value.trim().slice(0,20);
   if(!n){document.getElementById("msg").textContent="Digite um nome.";return}
   if(S.saved)return;
-  const r={name:n,score:S.score,time:Math.round(S.time),hits:S.hits,phase:NV[S.p],t:Date.now()};
+  const timeQuality=Math.max(0,1-S.time/(50*240));const weighted=50*(.7*(S.score/50)+.2*(S.hits/Math.max(1,S.tot))+.1*timeQuality);const r={name:n,score:Number(weighted.toFixed(2)),rawScore:Number(S.score.toFixed(2)),time:Math.round(S.time),hits:S.hits,phase:NV[S.p],version:2,duration:Math.round((Date.now()-S.startedAt)/1000),t:Date.now()};
   let ok=false;
   if(FB)try{ok=await dbput("ranking/"+WK+(AUTH?"/"+U.uid:""),r)}catch(e){}
   if(!ok){LOC.push({...r,w:WK});try{localStorage.setItem("rk",JSON.stringify(LOC))}catch(e){}}
   S.saved=true;await loadRank();show();
 }
-async function start(){
-  if(AUTH){
-    if(!(U&&U.ver)){MSG="Entre com sua conta para jogar.";return show()}
-    let ok=false;try{ok=await dbput("plays/"+WK+"/"+U.uid,{t:Date.now(),e:U.email})}catch(e){}
-    if(!ok){MSG="Você já jogou hoje ("+dm(WK)+") ou não foi possível conectar. Volte amanhã!";return show()}
+async function start(mode="cert"){
+  if(mode==="cert"&&AUTH){
+    if(!(U&&U.ver)){MSG="Entre com sua conta para iniciar a certificação.";return show()}
+    let ok=false;try{ok=await dbput("plays/"+WK+"/"+U.uid,{t:Date.now(),e:U.email,version:2})}catch(e){}
+    if(!ok){MSG="Você já iniciou a certificação hoje ou não foi possível conectar. Volte amanhã!";return show()}
   }
-  MSG="";fresh(AUTH?hs(U.uid+WK):0);SFX.start();nq();loadRank();
+  MSG="";fresh(mode==="cert"&&AUTH?hs(U.uid+WK):0);S.mode=mode;S.startedAt=Date.now();SFX.start();nq();if(mode==="cert")loadRank();
 }
 const hearts=()=>"❤️".repeat(Math.min(S.lives,V))+(S.lives>V?"🛡️":"")+"🖤".repeat(Math.max(0,V-S.lives));
 function head(){
-  return`<div class="card"><div class="top"><span>Nível ${NV[S.p]} · pergunta ${S.i+1}/10</span><span>⭐ ${S.score} pts</span><span>🔥 ${S.st%10}/10</span><span>${hearts()}</span></div><div class="bar"><i style="width:${(S.p*10+S.i)*2}%"></i></div></div>`;
+  return`<div class="card"><div class="top"><span>Nível ${NV[S.p]} · pergunta ${S.i+1}/10</span><span class="tag">${S.mode==="train"?"Treinamento":"Certificação"}</span><span>⭐ ${S.score} pts</span><span>🔥 ${S.st%10}/10</span><span>${hearts()}</span></div><div class="bar"><i style="width:${(S.p*10+S.i)*2}%"></i></div></div>`;
 }
 function loginHTML(){
   if(!AUTH)return"";
   if(U&&U.ver)return`<div class="card"><p>Conectado como <b>${esc(U.email)}</b> · <button class="g" onclick="logout()">Sair</button></p><p><small>Cada e-mail pode jogar uma vez por dia (hoje: ${dm(WK)}).</small></p></div>`;
   return`<div class="card"><h2>🔐 Entre para jogar</h2><input id="em" type="email" placeholder="E-mail"> <input id="pw" type="password" placeholder="Senha (mín. 6 caracteres)"><br><button class="b" onclick="doLogin(0)">Entrar</button> <button class="g" onclick="doLogin(1)">Criar conta</button> ${U&&!U.ver?`<button class="g" onclick="resend()">Reenviar e-mail de verificação</button>`:""}<p class="fb">${esc(LMSG)}</p></div>`;
 }
-const canPlay=()=>!AUTH||(U&&U.ver);
+const canPlay=()=>true;
 function show(){
   if(S.view=="intro"){
-    $.innerHTML=`<div class="card"><h1>🧭 A Jornada do Implantador</h1><p>50 perguntas sobre o JunsoftERP em 5 níveis de 10, sorteadas de um banco de 100. Cada jogador recebe um sorteio próprio, com perguntas, ordem e alternativas diferentes. Cada pergunta vale 1 ponto. A base foi revisada usando a documentação pública do portal Junsoft; itens não confirmados publicamente devem ser tratados como conhecimento interno e revisados antes de uso em produção.</p><p><b>N1 e N2:</b> múltipla escolha (a–e), 60 s por pergunta. <b>N3, N4 e N5:</b> respostas descritivas, 240 s por pergunta; o sistema avalia pelos conceitos-chave citados e mostra quantos você já atendeu enquanto digita.</p><p>Você tem <b>5 vidas</b>. A cada <b>10 acertos seguidos</b> ganha 1 vida; com as 5 cheias, ganha um 🛡️ escudo (máximo de 1). O ranking é <b>diário</b> e recomeça a cada dia: mais pontos fica na frente e, em empate, o menor tempo total.</p>${MSG?`<p class="fb"><b>${esc(MSG)}</b></p>`:""}${canPlay()?`<button class="b" onclick="start()">Começar</button>`:""}</div>`+loginHTML()+`<div class="card"><h2>🏆 Top 10 de hoje (${dm(WK)})</h2>${rankHTML()}</div>`+hofHTML();return}
+    $.innerHTML=`<div class="card"><h1>🧭 A Jornada do Implantador</h1><p>50 perguntas em 5 níveis, sorteadas de um banco de ${POOL.reduce((n,p)=>n+p.length,0)} questões. A ordem e as alternativas são embaralhadas. O N5 contém casos de implantação com diagnóstico, decisão, análise de impacto e validação. O banco pode ser ampliado e revisado continuamente.</p><p><b>N1 e N2:</b> múltipla escolha (a–e), 60 s por pergunta. <b>N3, N4 e N5:</b> respostas descritivas, 240 s por pergunta; o sistema avalia pelos conceitos-chave citados e mostra quantos você já atendeu enquanto digita.</p><p><b>Certificação:</b> tentativa única diária, tempo limitado e resultado ao final; o gabarito não é exibido na interface durante a certificação. <b>Treinamento:</b> sem ranking, com feedback por conceito e possibilidade de tentar novamente. Respostas descritivas recebem crédito parcial conforme os conceitos identificados; aprovação exige N3 70%, N4 80% e N5 90%.</p><p>Na certificação você tem <b>5 vidas</b>. A cada <b>10 acertos seguidos</b> ganha 1 vida; com as 5 cheias, ganha um 🛡️ escudo.</p>${MSG?`<p class="fb"><b>${esc(MSG)}</b></p>`:""}${canPlay()?`<div class="mode"><button class="b" onclick="start('train')">📘 Modo treinamento</button><button class="b" onclick="start('cert')">🏅 Modo certificação</button></div>`:""}</div>`+loginHTML()+`<div class="card"><h2>🏆 Top 10 de hoje (${dm(WK)})</h2>${rankHTML()}</div>`+hofHTML();return}
   if(S.view=="phase"){
-    $.innerHTML=`<div class="card"><h2>✅ Nível ${NV[S.p]} concluído</h2><p class="big">${S.score} pts</p><p>Tempo total: ${fmt(S.time)} · Vidas: ${hearts()}</p><button class="b" onclick="S.p++;S.i=0;SFX.start();nq()">Próximo: ${NV[S.p+1]} (${S.p+1<2?"múltipla escolha":"resposta descritiva, 240 s"})</button></div>`;return}
+    $.innerHTML=`<div class="card"><h2>✅ Nível ${NV[S.p]} concluído</h2><p class="big">${S.score.toFixed(1)} pts</p><p>Classificação: <b>${S.score>=47.5?"N5 — Especialista":S.score>=42.5?"N4 — Avançado":S.score>=35?"N3 — Intermediário":S.score>=25?"N2 — Operacional":"Em formação"}</b></p><p>Tempo total: ${fmt(S.time)} · Vidas: ${hearts()}</p><button class="b" onclick="S.p++;S.i=0;SFX.start();nq()">Próximo: ${NV[S.p+1]} (${S.p+1<2?"múltipla escolha":"resposta descritiva, 240 s"})</button></div>`;return}
   if(S.view=="end"){
-    $.innerHTML=`<div class="card"><h2>${S.won?"🏆 Jornada concluída! Você é Lenda da Implantação":"💥 Fim das vidas no nível "+NV[S.p]}</h2><p class="big">${S.score} pts</p><p>Tempo total: ${fmt(S.time)} · Acertos: ${S.hits} de ${S.tot}</p>`+
-    (S.saved?"":`<p>Registre seu nome no ranking de hoje:</p><input id="nm" maxlength="20" placeholder="Seu nome"> <button class="b" onclick="save()">Salvar</button><p id="msg" class="fb"></p>`)+
+    $.innerHTML=`<div class="card"><h2>${S.won?"🏆 Jornada concluída! Você é Lenda da Implantação":"💥 Fim das vidas no nível "+NV[S.p]}</h2><p class="big">${S.score.toFixed(1)} pts</p><p>Classificação: <b>${S.score>=47.5?"N5 — Especialista":S.score>=42.5?"N4 — Avançado":S.score>=35?"N3 — Intermediário":S.score>=25?"N2 — Operacional":"Em formação"}</b></p><p>Tempo total: ${fmt(S.time)} · Acertos: ${S.hits} de ${S.tot}</p>`+
+    (S.mode==="train"?`<p><b>Modo treinamento:</b> resultado não enviado ao ranking.</p><button class="b" onclick="start('train')">Treinar novamente</button>`:(S.saved?"":`<p>Registre seu nome no ranking de hoje:</p><input id="nm" maxlength="20" placeholder="Seu nome"> <button class="b" onclick="save()">Salvar</button><p id="msg" class="fb"></p>`))+
     (AUTH?`<p><small>Seu próximo jogo será amanhã.</small></p>`:`<button class="g" onclick="start()">Jogar de novo</button>`)+`</div><div class="card"><h2>🏆 Top 10 de hoje (${dm(WK)})</h2>${rankHTML()}</div>`+hofHTML();
     if(RK===undefined)loadRank();return}
   const q=G[S.p][S.i];
   $.innerHTML=`<div class="side"><div>Tempo total<b id="ct">${fmt(S.time)}</b></div><div>Restante<b id="cr">${Math.ceil(S.left)}s</b></div></div>`+head()+`<div class="card"><div class="bar"><i id="tb" style="width:${S.left/LIM()*100}%;background:var(--er)"></i></div><h2>${q.q}</h2><p class="crit"><small>${q.src=="oficial"?"📚 Base: documentação pública Junsoft":q.src=="fiscal"?"📘 Base: conceito fiscal geral":"🧠 Base: conhecimento operacional interno — não localizado na documentação pública consultada"}</small></p>`+
   (q.o?q.o.map((o,k)=>`<button class="o" ${S.ans?"disabled":""} onclick="pick(${k})"><b>${LET[k]})</b> ${o}</button>`).join(""):
-  `<p class="crit">Critérios: atenda ao menos <b>${need(q)}</b> de <b>${q.g.length}</b>${S.p>=3?" e explique as relações entre os conceitos.":""} Atendidos: <b id="cc">${grade(q,S.txt).h}</b> <span id="fm" class="fm"></span></p><textarea id="ans" rows="7" ${S.ans?"disabled":""} placeholder="Digite sua resposta (Ctrl+Enter envia)" oninput="crit()" onkeydown="if(event.ctrlKey&&event.key=='Enter')sendD()">${esc(S.txt)}</textarea>${S.ans?"":`<button class="b" onclick="sendD()">Enviar resposta</button>`}`)+`<div id="fb" class="fb"></div></div>`;
+  `<p class="crit">Critérios: atenda ao menos <b>${need(q)}</b> de <b>${q.g.length}</b> · Crédito parcial por conceito${S.p>=3?" e explique as relações entre os conceitos.":""} Atendidos: <b id="cc">${grade(q,S.txt).h}</b> <span id="fm" class="fm"></span></p><textarea id="ans" rows="7" ${S.ans?"disabled":""} placeholder="Digite sua resposta (Ctrl+Enter envia)" oninput="crit()" onkeydown="if(event.ctrlKey&&event.key=='Enter')sendD()">${esc(S.txt)}</textarea>${S.ans?"":`<button class="b" onclick="sendD()">Enviar resposta</button>`}`)+`<div id="fb" class="fb"></div></div>`;
 }
 function crit(){
   const q=G[S.p][S.i],a=document.getElementById("ans"),c=document.getElementById("cc"),f=document.getElementById("fm");if(!a||!c)return;
@@ -371,32 +385,34 @@ function startT(){
   },200);
 }
 function nq(){S.view="q";S.ans=false;S.txt="";S.left=LIM();show();startT();const a=document.getElementById("ans");if(a)a.focus()}
-function done(ok,html){
+function done(ok,html,detail=null){
   S.time+=Math.min(LIM(),(Date.now()-S.t0)/1000);S.ans=true;S.tot++;
-  if(ok){
-    S.score++;S.hits++;S.st++;SFX.ok();
-    if(S.st%10==0){
-      if(S.lives<V){S.lives++;html+="<br>🔥 10 acertos seguidos! Você ganhou 1 vida de volta."}
-      else if(S.lives==V){S.lives++;html+="<br>🔥 10 acertos seguidos! Vidas cheias: você ganhou um 🛡️ escudo (vida extra)."}
-      else html+="<br>🔥 10 acertos seguidos! O escudo já está ativo (máximo de 1).";
-      setTimeout(SFX.life,350);
-    }
-  }else{S.st=0;S.lives--;S.lives==0?SFX.lose():SFX.err()}
+  const training=S.mode==="train";
+  let credit=ok?1:0;
+  if(detail&&!ok&&detail.sf)credit=Math.min(.85,detail.h/detail.n);
+  if(credit>0)S.score+=credit;
+  if(ok){S.hits++;S.st++;SFX.ok();if(!training&&S.st%10==0){if(S.lives<V){S.lives++;html+="<br>🔥 10 acertos seguidos! Você ganhou 1 vida de volta."}else if(S.lives==V){S.lives++;html+="<br>🔥 10 acertos seguidos! Você ganhou um 🛡️ escudo."}setTimeout(SFX.life,350)}}
+  else if(!training){S.st=0;S.lives--;S.lives==0?SFX.lose():SFX.err()}else{SFX.warn()}
   show();upd();
-  document.getElementById("fb").innerHTML=html+`<br><button class="b" onclick="next()">Continuar</button>`;
+  const feedback=detail?`<div class="feedback-grid"><div><b>${detail.h}/${detail.n}</b><br><small>Conceitos identificados</small></div><div><b>${Math.round(credit*100)}%</b><br><small>Crédito desta questão</small></div><div><b>${detail.miss.length}</b><br><small>Conceitos a revisar</small></div></div>`:"";
+  const misses=detail&&detail.miss.length?`<p><b>Para revisar:</b> ${esc(detail.miss.join(", "))}</p>`:"";
+  const retry=training&&!ok?`<button class="b" onclick="retry()">Tentar novamente</button> `:"";
+  document.getElementById("fb").innerHTML=html+feedback+misses+`<br>${retry}<button class="b" onclick="next()">${training?"Continuar":"Continuar"}</button>`;
 }
+function retry(){S.i=Math.max(0,S.i);S.attempts++;nq()}
+
 function pick(k){
   if(S.ans)return;clearInterval(tmr);
   const q=G[S.p][S.i],ok=k>=0&&q.o[k]==q.a;
-  done(ok,(ok?"✅ Correto! +1 ponto.":(k<0?"⏰ Tempo esgotado. ":"❌ ")+"Resposta: <b>"+LET[q.o.indexOf(q.a)]+") "+q.a+"</b>"));
+  done(ok,(ok?"✅ Correto! +1 ponto.":(k<0?"⏰ Tempo esgotado. ":"❌ ")+(S.mode==="train"?"Resposta de referência: <b>"+LET[q.o.indexOf(q.a)]+") "+q.a+"</b>":"Resposta não exibida no modo certificação.")));
   document.querySelectorAll(".o").forEach((b,j)=>{if(q.o[j]==q.a)b.classList.add("ok");else if(j==k)b.classList.add("er")});
 }
 function sendD(){
   if(S.ans)return;clearInterval(tmr);
   const a=document.getElementById("ans"),q=G[S.p][S.i];
   S.txt=a?a.value:"";
-   const r=grade(q,S.txt);
-  done(r.ok,(r.ok?"✅ Resposta aceita! +1 ponto. ":(r.sf?"❌ Resposta insuficiente. ":"❌ "+r.why+" "))+`Critérios atendidos: ${r.h} de ${r.n} (mínimo ${need(q)}).`+(r.miss.length?` Faltou citar algo sobre: <i>${esc(r.miss.join(", "))}</i>.`:"")+`<br><b>Resposta modelo:</b> ${esc(q.m)}`);
+  const r=grade(q,S.txt);
+  done(r.ok,(r.ok?"✅ Resposta aceita. ":(r.sf?"❌ Resposta ainda insuficiente. ":"❌ "+r.why+" "))+`Critérios atendidos: ${r.h} de ${r.n} (mínimo ${need(q)}).`+(S.mode==="train"?`<br><b>Resposta de referência:</b> ${esc(q.m)}`:""),r);
 }
 function next(){
   if(S.lives==0){S.view="end";return show()}

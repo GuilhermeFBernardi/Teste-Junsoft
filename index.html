@@ -11,6 +11,15 @@
 .side{position:fixed;left:12px;top:42%;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;font-size:13px;color:var(--mu);z-index:5}.side b{display:block;font-size:1.5rem;color:var(--tx);font-variant-numeric:tabular-nums}.side div+div{margin-top:8px}
 @media(max-width:980px){.side{position:static;display:flex;justify-content:space-around;margin-bottom:12px}.side div+div{margin-top:0}}
 .cd{position:fixed;right:4vw;top:50%;transform:translateY(-50%);font-size:min(30vw,170px);font-weight:900;color:var(--er);opacity:.88;pointer-events:none;z-index:9;line-height:1}
+textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px;width:100%;resize:vertical}
+.m1 td,.m1{color:var(--gold);font-weight:800;text-shadow:0 0 8px color-mix(in srgb,var(--gold) 55%,transparent)}.m2 td,.m2{color:var(--silver);font-weight:700}.m3 td,.m3{color:var(--bronze);font-weight:700}
+.m1 td{background:color-mix(in srgb,var(--gold) 12%,transparent)}
+:root{--gold:#b88a00;--silver:#7b8494;--bronze:#a4571f}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--gold:#ffd23f;--silver:#d5dae3;--bronze:#e8935a}}
+:root[data-theme="dark"]{--gold:#ffd23f;--silver:#d5dae3;--bronze:#e8935a}
+.crit{font-size:14px;color:var(--mu);margin:6px 0}.crit b{color:var(--tx)}
+.hof{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px;font-size:14px}.hof h2{font-size:1rem}.hw{margin-top:8px}.hw small{color:var(--mu)}
+@media(min-width:1180px){.hof{position:fixed;left:10px;top:10px;bottom:10px;width:210px;overflow:auto;margin:0}}
 .tg{display:block;margin:10px 16px 0 auto}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 main{max-width:640px;margin:0 auto;padding:16px}
@@ -31,185 +40,255 @@ table{width:100%;border-collapse:collapse;font-size:15px}td,th{padding:6px 4px;t
 <button class="tg g" id="tg" onclick="tgl()" aria-label="Alternar tema claro ou escuro">🌙</button>
 <main id="app"></main>
 <script>
-const N=["Estagiário","Operador","Analista","Especialista","Fiscal","Arquiteto","Detetive de Dados","Mestre dos Números","Guardião das Migrations","Lenda da Implantação"];
-const T=["Cadastros básicos","Rotina diária","Fluxos de negócio","Segmentos verticais","Fiscal e integrações","Visão geral","Consulta ao banco","Tipos do banco","Migrations","Nova base com especificações"];
-// pergunta|resposta correta|explicação (opcional)|alternativas erradas separadas por ;  — a última de cada fase é o Chefe.
-const D=[`Qual é o nome do ERP desktop em 64 bits?|JunsoftERP V2||JunsoftERP V1;JunsoftGestão 64;JunsoftDesk Pro
-Como o sistema trata cliente e fornecedor?|Um cadastro único de Pessoa|Uma pessoa pode ser as duas coisas.|Dois cadastros totalmente separados;Só o fornecedor tem cadastro
-O que o Pedido de venda origina quando é faturado?|A Nota Fiscal||O boleto bancário;O contrato de venda;A ordem de produção
-Quantas empresas o sistema aceita na mesma base?|Várias (multiempresa)||Somente uma;No máximo duas
-Qual cadastro precisa existir antes do endereço de um cliente?|Pessoa||Município;Vendedor;Empresa
-Para que serve o cadastro de Vendedor?|Vincular vendas e calcular comissões||Controlar o estoque por lote;Emitir boletos bancários;Definir parcelamentos de compra
-O que o Centro de Resultado permite?|Alocar custos por área ou resultado||Cadastrar endereços de clientes;Definir a grade dos produtos;Controlar o horário dos usuários
-O que um produto pode ter no cadastro?|Grade, lote e local de estoque||Apenas código e descrição;Só o preço de venda
-Em qual área ficam usuários, permissões e parâmetros?|Administração||Contábil;Financeiro;Fiscal
-CHEFE: qual destes é um cadastro mestre?|Centros de Resultado||Retorno bancário;Nota aprovada;Fechamento de caixa`,
-`Qual conjunto é forma de recebimento na frente de caixa?|Dinheiro, cartão (TEF) e PIX||Boleto, NFS-e e MDF-e;Retorno, CT-e e SAT;Pedido, Parcelamento e Grade
-Qual documento fiscal é emitido na venda de balcão?|NFC-e ou cupom SAT||NF-e de entrada ou CT-e;NFS-e ou MDF-e;Boleto ou duplicata
-O que significa TEF?|Integração com operadoras de cartão||Transferência eletrônica de fornecedores;Terminal eletrônico fiscal;Tabela de encargos financeiros
-O que se faz no fim do dia no caixa?|Fechamento e conferência||Emissão do SPED;Importação do retorno bancário;Cadastro de novos produtos
-Por onde um pedido pode ser criado?|ERP, portal web ou app do vendedor||Somente pelo ERP desktop;Apenas pelo app de coleta de leite;Só pelo GerNotas
-Nos nomes das telas, o que a letra L indica?|Listagem||Manutenção;Relatório;Configuração
-E a letra M?|Manutenção ou Movimento||Listagem;Relatório ou Rascunho;Configuração ou Cadastro
-E a letra R?|Relatório||Listagem;Manutenção;Configuração
-E a letra C?|Configuração||Listagem;Relatório;Movimento
-CHEFE: o prefixo PD (como em LPD) indica qual domínio?|Pedidos||Produtos;Pagamentos;Pessoas`,
-`Quando a SEFAZ aprova a nota, o que acontece no sistema?|Baixa estoque e gera títulos a receber||Só gera o boleto;Cancela o pedido de venda;Gera contas a pagar ao fornecedor
-O que a entrada de mercadorias gera?|Atualiza estoque e cria contas a pagar||Baixa estoque e cria contas a receber;Apenas emite a NF-e;Gera o MDF-e
-O que faz o retorno bancário?|Baixa automática dos títulos pagos||Gera os boletos da carteira;Emite nota de serviço;Cadastra novos bancos
-Para quantos bancos o sistema gera boletos?|Mais de 18||Apenas 3;Cerca de 5;Somente o banco padrão
-Qual a relação do plano de contas contábil com contas a pagar e a receber?|São cadastros independentes||É obrigatório em cada título;Substitui o cadastro financeiro;Gera os boletos automaticamente
-Qual documento é o manifesto que acompanha a carga?|MDF-e|O CT-e é o conhecimento de transporte.|CT-e;NFS-e;NFC-e
-Para que serve a NFS-e?|Notas de serviço às prefeituras||Notas de produtos à SEFAZ;Notas de transporte à ANTT;Vendas no balcão
-Para onde as compensações financeiras alimentam dados?|O Contábil||O Estoque;O Portal Web;O módulo de laticínios
-O que o cadastro de Parcelamento define?|Como a venda é dividida em parcelas||Quais bancos emitem boleto;Qual o prazo de entrega;Quem é o vendedor
-CHEFE: qual a ordem correta?|Pedido, Faturamento, Nota aprovada, Título||Nota aprovada, Pedido, Faturamento, Título;Título, Pedido, Nota aprovada, Faturamento;Faturamento, Pedido, Título, Nota aprovada`,
-`Quais são os dois segmentos verticais de destaque?|Laticínios e recapadoras (Vulcano)||Frigoríficos e usinas de açúcar;Agropecuária e transportadoras;Farmácias e supermercados
-Qual app Android registra coletas de leite?|CaptacaoMobile||VulcanoColeta;LeiteWeb;ColetaFácil
-Como os dados do app de leite chegam ao ERP?|Via API REST, no mesmo banco||Por arquivo XML enviado por e-mail;Por digitação manual no desktop;Por banco separado sincronizado à noite
-Qual app registra a coleta de pneus nos clientes?|VulcanoColeta||CaptacaoMobile;VulcanoProd;GerNotas
-Qual app acompanha a produção da recapagem etapa a etapa?|VulcanoProd||VulcanoColeta;CaptacaoMobile;Portal Web
-O que é a Ordem de Carregamento na recapagem?|Permite rastrear a etapa de produção||Emite a nota de remessa;Calcula a comissão do vendedor;Define o frete do pneu
-Qual a situação do pneu antes de virar nota de venda?|Pronto para faturamento||Em recusa de laudo;Aguardando coleta;Pedido cancelado
-De que tipos pode ser o laudo técnico?|Garantia ou recusa||Apenas aprovação;Orçamento ou cobrança;Venda ou devolução
-Quem recebe o pagamento consolidado na captação de leite?|Os produtores rurais||Os motoristas da coleta;Os vendedores externos;As prefeituras
-CHEFE: qual o caminho do pneu?|Coleta, OS, produção por etapas, faturamento, entrega||Faturamento, coleta, OS, entrega, produção;Entrega, laudo, coleta, faturamento;Produção, coleta, entrega, OS`,
-`O que faz o GerNotas?|Transmite NF-e e NFC-e pendentes em segundo plano||Imprime etiquetas de produto;Gera o retorno bancário;Consulta CEP dos clientes
-O que o GerNotas precisa para transmitir as notas?|Nada: roda sem tela aberta||Um usuário logado no ERP;O portal web aberto;O app do vendedor aberto;Uma tela de faturamento aberta
-Que siglas representam a reforma tributária contemplada?|IBS e CBS||ICMS e IPI;PIS e COFINS;ISS e IOF
-Uma mudança no motor fiscal compartilhado afeta quem?|ERP e GerNotas||Somente o ERP;Apenas os apps Android;Só o portal web
-Que serviço consulta CEP?|ViaCEP||SCPC;Firebase;GerNotas
-Que serviço consulta crédito?|SCPC||ViaCEP;Firebase;SEFAZ
-O que o sistema envia por e-mail ao cliente?|Notas e boletos||Somente senhas de usuário;Laudos técnicos de pneus;Arquivos do SPED
-Que serviço o app mobile web usa?|Firebase||ViaCEP;SCPC;Spring Boot
-Para quem serve o Portal Web?|Clientes e parceiros||Apenas o setor de TI;Somente o contador;Exclusivamente vendedores internos
-CHEFE: qual conjunto só tem documentos fiscais eletrônicos?|NF-e, NFC-e, CT-e e MDF-e||NF-e, DARF, GPS e CAGED;Boleto, NF-e, TEF e PIX;SPED, ViaCEP, SCPC e Firebase`,
-`Qual banco de dados é usado?|Firebird||PostgreSQL;MySQL;SQL Server
-Como as telas conversam entre si?|Pelos dados gravados no banco||Por chamadas diretas entre telas;Por arquivos XML;Por memória compartilhada
-Na passagem de pedido para nota, quem grava e quem lê?|Pedido grava, rotina de nota lê||Nota grava, pedido lê;Ambos gravam sem ler;A tela do pedido chama a nota
-Em que tecnologia estão as APIs?|Java 17 com Spring Boot||Node.js com Express;.NET 8;Python com Django
-Que tecnologia compõe o portal web?|Angular com Ionic||React com Next.js;Vue com Quasar;Delphi com VCL
-Os apps Android são nativos ou híbridos?|Nativos, em Java||Híbridos, em Flutter;Web, em Angular;Nativos, em Swift
-Quantos módulos o desktop tem, aproximadamente?|Cerca de 1.635||Cerca de 50;Cerca de 300;Mais de 10.000
-O que o repositório contém sobre o banco do cliente?|Só a estrutura e os scripts||O banco de produção completo;Os backups diários;As senhas dos usuários;Os dados de cada cliente
-Quais os dois motores de relatório?|ReportBuilder e FastReport||Crystal Reports e JasperReports;Power BI e Metabase;Excel e Word
-CHEFE: o que fica fora do repositório?|Banco do cliente, serviços externos e infra de produção||Scripts, migrations e estrutura;APIs, apps e portal web;Código do desktop e relatórios`,
-`Qual é a fonte da verdade sobre dados e estrutura?|O próprio banco||A documentação de schema;O manual do usuário;O repositório de código
-Como tratar a documentação de schema?|Como apoio, pois pode estar desatualizada||Como verdade absoluta;Como substituta do banco;Como fonte oficial dos tipos;Como cópia do banco de produção;Como substituta das migrations
-Que tipo de consulta a ferramenta oficial aceita?|Somente leitura||Leitura e escrita;Apenas escrita;Somente DDL
-O que acontece se a consulta tentar gravar?|O servidor recusa a escrita||A gravação é feita e registrada;É pedida uma confirmação;A escrita vai para uma fila;O banco entra em modo de teste;A escrita é adiada para o fim do dia
-Qual o limite padrão de linhas na resposta?|500||50;100;5.000
-Qual o tempo máximo padrão da consulta?|30 segundos||5 segundos;10 minutos;Sem limite
-Como vêm os valores decimais na resposta?|Texto, para preservar precisão||Ponto flutuante;Inteiro arredondado;Notação científica
-O que indica o campo “total” da resposta?|Só a quantidade de linhas da resposta||O total de registros da tabela;A soma dos valores;O total de linhas do banco;O tempo gasto na consulta;O número de colunas
-Como é uma consulta que retorna zero linhas?|Sucesso, sem erro||Erro de sintaxe;Erro de permissão;Tempo esgotado;Falha de conexão;Consulta bloqueada
-CHEFE: qual ferramenta usar?|A do repositório|A instalada na máquina pode estar em outra versão.|A instalada na máquina;A de qualquer colega;A mais recente da internet`,
-`O que são NUMERIC e DECIMAL no banco?|Máscaras sobre inteiros com escala||Tipos de texto;Tipos de ponto flutuante;Tipos de data;Tipos binários próprios;Tipos booleanos
-Qual o teto do domínio de percentual (3 dígitos, 2 casas)?|327,67||999,99;99,99;655,35
-Por que esse teto?|Guardado em inteiro de 2 bytes||Limitado pelo dialeto 3;Imposto pela interface do ERP;Definido pelo layout do relatório
-O que há na base sobre comissões?|Comissões acima de 300%||Só comissões até 9,99;Nenhuma acima de 100%;Só valores inteiros;Apenas comissões zeradas;Só comissões negativas
-O que define o teto?|O armazenamento (2, 4 ou 8 bytes)||A precisão declarada;A máscara de exibição;O dialeto do banco
-Quando o erro de estouro aparece?|Em tempo de execução||Na criação da tabela;Ao rodar a migration;Ao abrir o banco
-Qual tipo é o padrão para valores em dinheiro?|Numérico exato||Ponto flutuante;Texto;Inteiro sem escala;Data e hora;Binário
-Qual versão do Firebird e dialeto na base de desenvolvimento?|Firebird 5.0.1, dialeto 3||Firebird 2.5, dialeto 1;Firebird 3.0, dialeto 2;PostgreSQL 15, dialeto 3
-Como proteger divisão cuja base pode ser zero?|Tratar o zero e definir valor alternativo||Ignorar, o banco resolve;Trocar para ponto flutuante;Deixar o erro estourar para o usuário
-CHEFE: somar muitas linhas de um campo pequeno pode causar?|Estouro|Amplie o tipo antes de somar.|Lentidão no servidor;Perda de índices;Troca de dialeto`,
-`Como se altera a estrutura do banco?|Por migration versionada||Por script solto no ambiente;Direto na ferramenta de banco;Editando a documentação das tabelas
-Como é vista a alteração de estrutura “na mão” em ferramenta de banco?|Não permitida; vai por migration||Permitida em produção;Permitida só às sextas;Permitida com aviso ao cliente;Permitida no ambiente de qualidade;Permitida se houver backup;Permitida para o suporte
-O que são os arquivos de documentação das tabelas?|Documentação gerada, não o schema vivo||O schema vivo do banco;O backup do banco;Scripts de migration;Arquivos de configuração;O código das APIs;Relatórios de qualidade
-Qual o primeiro passo de uma nova alteração?|Criar o esqueleto da migration||Editar o arquivo de documentação;Rodar o script no banco de produção;Pedir autorização ao cliente
-Cargas iniciais (seed) vão por onde?|Também por migration||Por inserts manuais;Por importação direta no banco;Pelo GerNotas
-O que os comandos que escrevem no banco exigem?|Autorização explícita||Nenhuma, são comandos de leitura;Apenas o horário comercial;Somente o ambiente de produção
-O que identifica a origem de uma migration?|Número do chamado e autor||Data e hora da execução;Nome do banco e senha;Versão do Firebird
-De onde vêm os ambientes (dev, qualidade)?|Arquivo de configuração do repositório||Variáveis do Windows;Tela do ERP;Banco de produção de cada cliente
-A ferramenta diz “comando desconhecido”. O que fazer?|Atualizar a ferramenta do repositório||Usar a ferramenta instalada na máquina;Rodar o script na mão;Ignorar o aviso
-CHEFE: por que migration e não script solto?|Rastreabilidade, repetibilidade e mesma mudança em todos os ambientes||Porque é mais rápido de digitar;Porque dispensa o chamado;Porque evita a revisão`,
-`Antes de criar uma base nova, o que definir?|Ambiente, versão do Firebird, dialeto e cadastros||Só o nome do cliente;Apenas a cor do tema;Somente o CNPJ e a logo
-Qual a ordem de carga entre pessoa, município e endereço?|Município e pessoa, depois endereço||Endereço, depois pessoa e município;Pessoa, depois endereço e município;Tudo ao mesmo tempo, sem ordem
-Quais pré-requisitos tem um item?|Grupo e NCM cadastrados||Pessoa e vendedor cadastrados;Plano de contas e banco;Município e CEP
-Quais pré-requisitos tem uma conta a receber?|Pessoa dona do título (CPF ou CNPJ)||Nota fiscal aprovada;Vendedor e comissão;Pedido de venda faturado
-Qual o produto final de uma importação de legado?|Script revisável e relatório de qualidade||Base pronta gravada no cliente;Apenas um backup do legado;Somente um log de erros
-Quem executa o script gerado pela importação?|O implantador, após revisar||A própria ferramenta, direto no banco;O cliente;O GerNotas;O robô do portal web;O vendedor;O Firebird sozinho
-O que fazer com coluna ambígua no arquivo do cliente?|Perguntar ao implantador||Supor a coluna mais provável;Descartar a coluna;Gravar como texto livre
-Que cuidado ter com os arquivos de origem?|Têm dados pessoais reais||São sempre anonimizados;Podem ir direto ao repositório;Não exigem cuidado
-Ao descobrir regra nova sobre uma tabela, o que fazer?|Propor registrar na documentação do schema||Guardar só na memória;Alterar o banco direto;Ignorar, já é conhecido
-CHEFE FINAL: nova base para recapadora, comissão até 315%. Como proceder?|Conferir o tipo do campo (teto 327,67), criar por migration com chamado e validar por consulta somente leitura||Trocar para ponto flutuante e rodar script direto no banco;Limitar a comissão a 9,99 no cadastro;Criar o campo manualmente na base do cliente`].map(s=>s.split("\n").map(l=>{const f=l.split("|");return{q:f[0],a:f[1],e:f[2]||"",d:f[3]?f[3].split(";"):null}}));
-
-// ===== CONFIGURAÇÃO DO RANKING ONLINE =====
-// Cole aqui o endereço do seu Firebase Realtime Database (sem barra no fim), ex.:
-// const FB="https://meu-quiz-default-rtdb.firebaseio.com";
-// Vazio = o ranking fica salvo só neste navegador.
+const nz=t=>t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+const mc=s=>s.trim().split("\n").map(l=>{const f=l.split("|");return{q:f[0],a:f[1],d:f[2].split(";")}});
+const ds=s=>s.trim().split("\n").map(l=>{const f=l.split("~");return{q:f[0],m:f[1],g:f[2].split("|").map(x=>x.split(",").map(k=>nz(k.trim())))}});
+// N1 e N2: pergunta|correta|4 erradas separadas por ;   —   N3 a N5: pergunta~resposta modelo~conceitos (grupos separados por |, sinônimos por vírgula)
+const POOL=[mc(`Qual é o nome do sistema de gestão (ERP) cuja documentação está no Portal Junsoft?|JunsoftERP|JunsoftGestão;JunsoftWeb;SisJunsoft;ERP Junsoft Cloud
+Aproximadamente quantos módulos de negócio o JunsoftERP possui?|Cerca de 1.600|Cerca de 20;Cerca de 150;Cerca de 5.000;Mais de 20.000
+Qual módulo é responsável por emitir notas fiscais, vendas e devoluções?|Faturamento|Estoque;Financeiro;Fiscal;Pedidos
+Qual módulo cuida de contas a pagar, contas a receber e boletos?|Financeiro|Faturamento;Contábil;Estoque;Administração
+Em qual linguagem de programação é feito o programa principal que roda no computador (desktop)?|Delphi|Java;C#;Python;PHP
+Qual banco de dados armazena as informações do sistema?|Firebird|PostgreSQL;MySQL;SQL Server;Oracle
+Quantos aplicativos Android fazem parte do sistema?|3|1;5;8;12
+O que significa a sigla ERP?|Enterprise Resource Planning (Planejamento de Recursos Empresariais)|Electronic Record Processing;Enterprise Report Program;Entrada, Registro e Pagamento;Estoque, Recebimento e Produção
+Qual módulo cuida da coleta de leite e das rotas rurais?|Captação de leite|Faturamento;Recapagem;Transporte;Contábil
+Qual módulo trata do processo de recapagem de pneus?|Recapagem|Captação de leite;Estoque;Fiscal;Frente de Caixa
+O que significa a sigla PDV?|Ponto de Venda|Pedido de Vendas;Plano de Vendas;Pagamento Direto de Vendas;Programa de Descontos e Vendas
+Qual módulo controla entradas, saídas e inventário de mercadorias?|Estoque|Faturamento;Contábil;Financeiro;Transporte
+Qual módulo cuida do cadastro de usuários e das permissões de acesso?|Administração|Fiscal;Estoque;Pedidos;Faturamento
+Qual módulo trata das ordens de serviço e da manutenção de equipamentos?|Ordens de Serviço|Pedidos de compra;Contábil;Frente de Caixa;Captação de leite
+Qual módulo cuida dos pedidos de venda e de compra?|Pedidos|Fiscal;Contábil;Administração;Recapagem
+Cite dois produtos do Portal do Cliente da Junsoft além do JunsoftERP.|Portal de Chamados e Portal Web|Facebook e Instagram;Excel e Word;Firebird e Delphi;Gmail e Google Agenda
+Qual módulo cuida de fretes, entregas e documentos de transporte?|Transporte|Estoque;Contábil;Financeiro;Administração
+Qual módulo cuida da operação de caixa, PIX e sangria?|Frente de Caixa (PDV)|Contábil;Fiscal;Pedidos;Administração
+Para que serve o Portal de Chamados?|Abrir e acompanhar chamados de suporte|Emitir notas fiscais;Cadastrar produtos;Receber boletos;Controlar o estoque
+Qual módulo lida com impostos e obrigações enviadas ao governo, como o SPED?|Fiscal|Estoque;Pedidos;Transporte;Frente de Caixa`),
+mc(`Que tipos de nota fiscal o PDV (venda de balcão) pode emitir?|NFC-e ou SAT|NF-e de entrada ou CT-e;NFS-e ou MDF-e;Boleto ou duplicata;Nota de transferência ou DANFE
+De que formas um pedido de venda pode ser transformado em nota fiscal?|Total ou parcial, faturando só alguns itens|Somente total, sem faturamento parcial;Só digitando a nota manualmente;Apenas importando um XML;Só pelo portal web
+O que significa “faturar” um pedido?|Transformar o pedido em nota fiscal|Cancelar o pedido;Enviar o pedido ao cliente por e-mail;Cadastrar o cliente;Fechar o caixa
+O que acontece automaticamente com o estoque quando uma nota de venda é emitida?|Baixa dos itens vendidos|Entrada de mercadorias;Nada, o ajuste é manual;Inventário automático;Duplicação do saldo
+O que acontece automaticamente no financeiro quando uma nota de venda é emitida?|Geração dos títulos a receber|Geração de contas a pagar;Nada, é manual;Cancelamento do pedido;Emissão de CT-e
+Qual a diferença entre nota de saída e nota de entrada? Dê um exemplo de cada.|Saída: mercadoria sai (ex.: venda). Entrada: mercadoria entra (ex.: compra)|Saída: compra. Entrada: venda;Saída só para devolução e entrada só para serviço;Não há diferença entre elas;Saída é do PDV e entrada é do portal
+Além da venda, que outros tipos de nota de saída o sistema permite emitir?|Devolução, transferência e remessa|Somente venda;Apenas serviço;Só boleto;Somente cupom
+Por que uma devolução de mercadoria é registrada como uma nota fiscal?|Porque a mercadoria que volta precisa ser documentada fiscalmente|Para gerar boleto;Só por costume interno;Para dar desconto;Porque o cliente exige cupom
+Para que serve a tabela de preços no faturamento?|Definir o preço dos itens por tabela ou condição|Controlar o limite de crédito;Calcular comissão;Gerar a chave de acesso;Definir a série
+Para que serve o limite de crédito de um cliente?|Controlar o valor máximo que o cliente pode comprar a prazo|Definir o preço do item;Calcular imposto;Definir a série da nota;Limitar o desconto do vendedor
+O que é a comissão de um vendedor e em qual módulo ela é controlada?|Percentual pago ao vendedor sobre a venda, controlado em Vendas|Desconto dado ao cliente, controlado no Fiscal;Imposto sobre a venda, controlado no Financeiro;Frete cobrado, controlado em Transporte;Taxa de cartão, controlada no Caixa
+O que é uma nota em rascunho, ou seja, ainda não emitida?|Nota digitada mas ainda não transmitida|Nota cancelada;Nota autorizada pelo governo;Nota excluída definitivamente;Nota de transferência
+O que é o DANFE?|Documento Auxiliar da Nota Fiscal Eletrônica|Documento de Arrecadação Federal;Duplicata Autorizada;Declaração de ICMS;Documento de Abertura de Notas
+O que é a SEFAZ e qual o papel dela na emissão de uma nota eletrônica?|Secretaria da Fazenda, que autoriza as notas eletrônicas|Banco que emite os boletos;Empresa que vende certificados;Prefeitura que emite NFS-e;Órgão que fiscaliza o estoque do cliente
+Qual a diferença entre o ambiente de testes (homologação) e o de produção?|Homologação é teste sem valor fiscal e produção é real|Os dois são iguais;Produção é teste e homologação é real;Homologação só vale para NFC-e;Produção é só para cancelamentos
+Para que serve o certificado digital na emissão de notas?|Assinar digitalmente a nota|Calcular impostos;Gerar boletos;Baixar estoque;Cadastrar clientes
+O que é a “série” de uma nota fiscal?|Subdivisão que organiza a numeração das notas|Cor do DANFE;Tipo de imposto;Código do cliente;Forma de pagamento
+O que identifica a chave de acesso de uma nota e quantos dígitos ela tem?|Identifica a nota de forma única, com 44 dígitos|Identifica o cliente, com 11 dígitos;Identifica o produto, com 8 dígitos;Identifica o vendedor, com 14 dígitos;Identifica a série, com 3 dígitos
+Além da NF-e, que outros documentos fiscais eletrônicos o sistema emite?|NFC-e, CT-e, MDF-e e NFS-e|Somente NF-e;Apenas boleto e recibo;SPED e DARF;Duplicata e cheque
+Para que servem as bibliotecas compartilhadas (Shared), como o jFaturamento?|Reaproveitar regras comuns entre vários módulos|Guardar backups;Imprimir relatórios;Controlar o caixa;Cadastrar usuários`),
+ds(`Qual a diferença entre receber a resposta do governo na hora e receber depois, por meio de um recibo de consulta?~Na resposta síncrona o governo autoriza na hora. Na assíncrona o sistema envia o lote, recebe um recibo e consulta o resultado depois.~sincron,na hora,imediat|assincron,recibo,lote|consult,depois
+O que o sistema pode fazer com o boleto no momento da emissão da nota, dependendo da configuração da série?~Gerar ou não os boletos automaticamente a partir das parcelas, conforme a configuração da série.~gera,emit|parcela,titulo,financeiro|serie,configur
+Por que o sistema guarda os dados eletrônicos da nota (protocolo, XML) separados dos dados comerciais?~Porque são dados fiscais e técnicos, diferentes da parte comercial; separar facilita auditoria, reenvio e organização.~fiscal,eletronic,tecnic|comercial,negocio|auditor,reenvi,organiz,separa
+Onde fica guardado o arquivo da nota depois que ela é autorizada?~O XML autorizado, com o protocolo, fica armazenado no banco de dados do sistema.~xml|banco,pasta,diretorio,armazen|protocolo,autoriz
+Como o sistema calcula os impostos de cada item e de quais informações ele depende?~Por item, usando NCM, natureza da operação, situação tributária e estados de origem e destino, conforme as regras cadastradas.~ncm|natureza,cfop,operacao|estado,uf,origem,destino|situacao tribut,cst,csosn,regra
+O que é substituição tributária e como o sistema lida com ela?~O ICMS é recolhido antecipadamente por um substituto para toda a cadeia; o sistema calcula base e valor do ST por item conforme a regra (MVA).~antecip,cadeia,substitut|base,mva,st|item,calcul,regra
+O que significa ratear o frete entre os itens da nota?~Distribuir o valor do frete proporcionalmente entre os itens, por valor ou peso, compondo o total de cada item.~distribu,divid,proporcion,rate|item|valor,peso
+Como é formado o valor total de um item na nota (quantidade, preço, desconto, frete e despesas)?~Quantidade vezes preço, menos o desconto, mais o frete e as despesas.~quantidade|preco|desconto|frete|despesa
+Como o sistema sabe que um pedido já foi faturado?~Grava no pedido a quantidade faturada de cada item e o vínculo com a nota, atualizando a situação do pedido.~vincul,relaciona,refer|quantidade,item,saldo|situac,status,fatur
+Quais são as situações possíveis de uma nota (rascunho, pendente, válida, cancelada e excluída) e o que cada uma significa?~Rascunho: em edição. Pendente: enviada sem resposta. Válida: autorizada. Cancelada: anulada na SEFAZ. Excluída: removida antes de emitir.~rascunho|pendente|valida,autorizada|cancelada|excluida
+O que acontece quando o serviço do governo está fora do ar no momento da emissão?~A nota fica pendente para reenvio ou é emitida em contingência.~contingencia|pendente,aguard,reenvi,tent
+Qual a diferença entre cancelar uma nota e inutilizar uma numeração?~Cancelar anula uma nota já autorizada; inutilizar informa ao governo uma numeração que não será usada.~cancel,anula,autorizada|inutiliz,numera|nao usad,pulad,sem uso,nao foi utiliz,nao sera
+O que é uma Carta de Correção e que tipo de erro ela pode corrigir?~Evento que corrige erros em campos da nota que não alterem valores, destinatário ou data, como dados complementares.~evento,carta|erro,corrig|nao altera,valor,imposto,destinat,data
+Como o sistema pode impedir temporariamente a emissão de novas notas?~Por parâmetro de bloqueio de emissão, na série ou na configuração.~bloque,impedir,travar|serie,parametro,configur,emiss
+É possível editar uma nota depois de emitida? Em que condições?~Autorizada não se edita: só corrige por Carta de Correção ou cancela e emite outra. Rascunho ou nota reaberta pode ser editada.~nao,autorizada|carta,cancel|rascunho,reabert,pendente
+Quem pode ser responsável pelo pagamento do frete na nota? Quais são as opções?~Emitente (CIF), destinatário (FOB), terceiros ou sem frete.~emitente,remetente,cif|destinat,fob|terceiro|sem frete,proprio,sem ocorr
+Qual a vantagem de a numeração das notas ser automática por série?~Evita números repetidos ou pulados, mantém a sequência controlada por série e reduz erro humano.~repetid,duplic|pulad,sequenc,ordem|erro,seguranca,automatic
+Para que serve o envio automático por e-mail após a autorização da nota?~Enviar o XML e o DANFE ao cliente assim que autorizada, agilizando e evitando envio manual.~xml,danfe|cliente,destinat|autom,agil,manual
+Qual a diferença entre o certificado digital em arquivo e o certificado em cartão ou token?~O A1 é um arquivo instalado no computador; o A3 fica em cartão ou token e exige dispositivo e senha, sendo mais seguro.~a1,arquivo,pfx|a3,token,cartao|seguro,senha,dispositivo,fisico
+Por que o sistema permite bloquear a emissão de notas com data retroativa?~Para manter a cronologia fiscal e evitar problemas com a SEFAZ e a escrituração.~cronolog,sequencia,ordem|fiscal,sefaz,legisl,escritur|retroativ,anterior,data`),
+ds(`Descreva, passo a passo, o caminho de uma nota desde o rascunho até ser autorizada.~Rascunho, validação dos dados, numeração, geração e assinatura do XML, envio à SEFAZ e autorização com protocolo.~rascunho|valid|xml,assin|envi,sefaz|autoriz,protocolo
+Que etapas o sistema executa para enviar uma nota ao governo (certificado, geração do arquivo, assinatura, validação e envio)?~Carrega o certificado, gera o XML, assina, valida o arquivo e envia, tratando o retorno.~certificado|xml,arquivo|assin|valid|envi
+Que informações formam a chave de acesso de uma nota e para que serve o dígito verificador no final?~44 dígitos com UF, data (ano e mês), CNPJ do emitente, modelo, série, número e código; o dígito verificador detecta erro de digitação.~uf,estado|cnpj|modelo,serie,numero|dv,digito verificador,verific|44
+O que acontece no sistema, em cadeia, quando o governo autoriza uma nota?~Grava protocolo e XML, muda a situação para válida, baixa o estoque, gera os títulos financeiros e libera DANFE e e-mail.~protocolo,xml|valida,situacao,status|estoque|financeiro,titulo,parcela|email,danfe
+O que acontece com a nota quando o governo recusa o envio ou não consegue responder por instabilidade?~Na recusa (rejeição) a nota é corrigida e reenviada; na instabilidade fica pendente para consulta posterior ou segue em contingência.~rejei,recus,erro|corrig,reenvi|pendente,consult|contingencia
+O que o sistema desfaz ou ajusta quando uma nota autorizada é cancelada?~Estorna o estoque, cancela os títulos financeiros, registra o evento de cancelamento e atualiza a situação para cancelada.~estoque|financeiro,titulo,parcela|evento,protocolo|cancelada,situacao
+Quais prazos para cancelar uma nota aparecem na documentação e por que o sistema os valida antes de cancelar?~Em geral até 24 horas, com prazos maiores conforme regras do estado; o sistema valida para evitar rejeição da SEFAZ.~24|horas,prazo,dias|sefaz,rejei,estado,legisl|valid
+Descreva como se opera em contingência (sem o serviço normal do governo) e como voltar ao funcionamento normal depois.~Emite as notas em modo de contingência e, quando o serviço normaliza, transmite as notas pendentes e regulariza.~contingencia|emit,gera|normaliz,volta,retorn,restabelec|transmit,envi,regulariz
+Em que situação cada modo de contingência é indicado: queda de internet, governo do estado fora do ar e governo nacional fora do ar?~Queda de internet: contingência offline. Estado fora do ar: SVC (SEFAZ virtual). Ambiente nacional fora: EPEC.~offline,fs,formulario|svc,virtual|epec,nacional
+Em um pedido faturado parcialmente, como o sistema acompanha quais itens já viraram nota?~Registra por item a quantidade já faturada e o saldo, vinculando cada nota ao item e marcando o pedido como parcial.~item|quantidade,saldo|vincul,nota|parcial
+Como as parcelas a receber são definidas a partir da nota emitida?~Pelo parcelamento ou condição de pagamento, dividindo o valor total em parcelas com datas de vencimento.~parcelamento,condicao|valor,total|vencimento,data|titulo,parcela
+Como o sistema trata o estoque e os impostos em uma devolução parcial?~Considera só os itens e quantidades devolvidos, devolve o estoque proporcional e recalcula os impostos proporcionalmente.~item,quantidade,proporcion|estoque|imposto,icms,tribut|parcial
+Por que o imposto de um mesmo produto pode mudar conforme o estado de origem e o de destino da venda?~Porque a alíquota de ICMS e os benefícios dependem da UF de origem e de destino, interna ou interestadual.~aliquota,icms|origem|destino|estado,uf,interestadual
+Em que situação uma venda para outro estado gera imposto também para o estado do comprador?~Quando o destinatário é consumidor final não contribuinte: o DIFAL reparte o ICMS com o estado de destino.~nao contribuinte,consumidor final|difal,diferencial,partilha|destino
+Como a nota emitida se conecta ao transporte (conhecimento de transporte e manifesto de carga)?~O CT-e referencia as chaves das NF-e transportadas e o MDF-e reúne os documentos da carga.~ct-e,cte,conhecimento|mdf,manifesto|chave|carga,transport
+Como cada item vendido alimenta as obrigações fiscais da empresa, como o SPED?~Cada item guarda CFOP, CST, NCM e valores de impostos que formam os registros e a apuração do SPED.~cfop,cst,ncm,imposto|sped|registro,escritur,apuracao,obrigac
+Para que serve a inutilização de numeração e em que situação ela é necessária?~Informar à SEFAZ numeração pulada ou não usada, por falha ou erro, para não deixar buracos na sequência.~numera,sequenc|pulad,nao usad,perdid,falha|sefaz,informar,comunic
+Que informações por item guardadas na nota permitem calcular margem de lucro e comissão?~Custo, preço de venda, desconto e percentual de comissão do vendedor em cada item.~custo|preco,venda|desconto|comissao,percentual,vendedor
+Por que o sistema separa as configurações por série de nota das configurações gerais de faturamento?~Cada série pode ter regras próprias (modelo, ambiente, boleto, numeração) enquanto as gerais valem para todas, dando flexibilidade.~serie|propri,diferen,especific|geral,todas|boleto,modelo,ambiente,numera,flexib
+Que verificações o sistema faz antes de numerar e enviar uma nota ao governo?~Valida certificado, dados obrigatórios, cadastros, impostos, numeração e regras de bloqueio e data.~certificado|obrigator,cadastro,dados|imposto,tribut|numera|bloque,data`),
+ds(`Uma empresa vende um produto com substituição tributária para um cliente de outro estado que não é contribuinte. Que cálculos fiscais o sistema precisa fazer e como eles aparecem nos itens da nota?~Calcula o ICMS próprio, a base e o valor do ICMS-ST conforme a regra, e o DIFAL por ser não contribuinte; tudo detalhado em cada item.~icms|st,substitui|difal,diferencial|item,base|nao contribuinte,consumidor
+Um pedido com 10 itens é faturado em duas notas diferentes. Descreva os efeitos no estoque, no financeiro e no acompanhamento do pedido.~Cada nota baixa o estoque dos seus itens e gera suas próprias parcelas; o pedido fica parcial, com saldo, até faturar o restante.~estoque|financeiro,parcela,titulo|parcial,saldo|duas notas,cada nota|faturado,encerr
+Uma nota autorizada, que já baixou estoque, gerou parcelas e está ligada a um documento de transporte, precisa ser cancelada. Descreva o efeito em cascata.~Cancela na SEFAZ por evento, estorna estoque e títulos, e é preciso tratar antes o CT-e ou MDF-e vinculado.~evento,sefaz,cancel|estoque|financeiro,titulo,parcela|ct-e,cte,transporte,mdf|vinculad,antes,depend
+A internet do escritório cai durante um dia de grande movimento de vendas. Como a empresa deve proceder para continuar emitindo e como regulariza tudo depois?~Entra em contingência offline e continua emitindo; quando a internet volta, transmite as notas e confere pendências e rejeições.~contingencia|continuar,emitir|volta,normaliz|transmit,envi|pendente,rejei,confer,regulariz
+Como as configurações da série, do cliente e do faturamento geral se combinam para decidir qual série usar e se o boleto será gerado?~Vale a mais específica: cliente, depois série, depois a configuração geral; isso define a série e se gera boleto.~serie|cliente|geral,faturamento|precedencia,prioridade,sobrepoe,especific|boleto
+Uma nota é reaberta para corrigir um item. Como o sistema decide se os impostos devem ser recalculados e que permissões influenciam isso?~Depende de parâmetro e da permissão do usuário para editar e recalcular; alterando item ou valor, os impostos são recalculados.~reabr,reabert|recalcul|permiss|parametro,configur|item,imposto
+Como o frete é distribuído entre os itens e de que forma isso afeta o valor final de cada item e os impostos?~É rateado proporcionalmente ao valor ou peso de cada item, soma ao valor do item e pode entrar na base dos impostos.~rateio,proporcion,distribu|valor,peso|item|imposto,base|total
+Que configurações precisam estar corretas antes de uma empresa passar do ambiente de testes para o de produção na emissão de notas?~Certificado válido, ambiente de produção, série e numeração, dados da empresa, tributação e e-mail, com testes feitos em homologação.~certificado|ambiente,producao|serie,numera|empresa,cadastro|imposto,tribut,regra|homologa,teste
+Explique o papel de cada peça do processo de emissão (tela de nota, motor fiscal, painel de transmissão e assinatura) e como elas cooperam.~A tela coleta os dados, o motor fiscal calcula e valida os impostos, o painel de transmissão envia e consulta, e a assinatura assina o XML.~tela|motor,calcul|painel,transmiss,envi|assin|xml,coopera,integra
+De que formas é possível acessar informações de faturamento (desktop, portal web e API) e para que serve cada uma?~O desktop é a operação completa; o portal web serve consulta e pedidos para clientes e parceiros; a API serve integrações com outros sistemas.~desktop|portal|api|integra|consult,pedido,operac
+Explique o ciclo completo de uma venda, do pedido até as obrigações fiscais, citando o que cada módulo faz no caminho.~Pedido, faturamento (nota), autorização fiscal, baixa de estoque, títulos no financeiro, contábil e SPED.~pedido|faturament,nota|estoque|financeiro,boleto,titulo|fiscal,sped|contab
+Compare cancelamento, Carta de Correção e inutilização: em que situação usar cada um e qual o efeito de cada um no sistema.~Cancelamento anula nota autorizada e estorna estoque e financeiro; Carta de Correção corrige campos sem alterar valores; inutilização informa numeração não usada.~cancel|carta,correcao,cce|inutiliz|estoque,financeiro|numera|erro,campo
+Compare uma venda de balcão (PDV) com uma venda por pedido faturado: documentos emitidos, módulos envolvidos e etapas.~O PDV emite NFC-e ou cupom na hora, com pagamento no ato; o pedido passa por etapas até o faturamento e emite NF-e, com parcelas a prazo.~pdv,balcao,caixa|nfc,sat,cupom|pedido|nf-e,nfe|prazo,parcela,financeiro
+Como as classificações fiscais (natureza da operação, situação tributária, NCM e regras por estado) contribuem para o cálculo do imposto de um item?~A natureza define o CFOP, a situação tributária define o tratamento, o NCM define alíquotas e ST, e as regras por estado definem a alíquota.~natureza,cfop|situacao tribut,cst|ncm|estado,uf|aliquota,imposto
+Quais são os tipos de nota (saída, entrada, devolução e transferência) e como cada um afeta o estoque e o financeiro?~Saída baixa estoque e gera a receber; entrada soma estoque e gera a pagar; devolução inverte; transferência move estoque sem financeiro.~saida|entrada|devolu|transfer|estoque|financeiro
+Por que a nota pendente é uma situação crítica? Quais as possíveis causas, como ela se resolve e que caminhos pode seguir?~Foi enviada sem resposta, então não se sabe se foi autorizada; causa comum é instabilidade ou queda; resolve-se consultando recibo ou chave e pode virar autorizada ou rejeitada.~sem resposta,nao sabe,incert,autoriz|instabil,queda,internet,causa|consult,recibo,chave|rejei,autoriz,cancel
+Como as permissões de edição e de recálculo podem ser combinadas para evitar notas com impostos incorretos?~Quem edita itens deve ser obrigado a recalcular; permissão de editar sem recalcular fica restrita a perfis específicos.~permiss|edi|recalcul|imposto|perfil,usuario,restri
+Imagine uma empresa de recapagem de pneus que usa o JunsoftERP. Quais módulos entram em ação do pedido do cliente até o faturamento e o recebimento?~Pedido ou ordem de serviço, coleta do pneu, produção por etapas, laudo, faturamento da nota, financeiro no recebimento e transporte.~pedido,ordem|coleta|producao,etapa|faturament,nota|financeiro,receb|laudo,transporte
+Imagine uma cooperativa de leite usando o sistema. Como os módulos de coleta, financeiro, notas fiscais e transporte se conectam desde a coleta até o pagamento e a entrega?~A coleta no app grava via API no banco, o financeiro paga os produtores, as notas são emitidas e o transporte entrega com CT-e e MDF-e.~coleta,captac|api,banco|financeiro,pagamento,produtor|nota|transporte,entrega,ct-e,mdf
+Como os componentes do ecossistema (programa desktop, APIs, portal web, aplicativos móveis e banco de dados) se integram quando uma venda é feita em um aplicativo de campo e depois consultada no portal?~O app grava a venda pela API no banco Firebird; o desktop e o portal web leem o mesmo banco, então a venda aparece no portal.~app,aplicativo,mobile|api|banco,firebird|desktop|portal`)];
+// ===== VARIAÇÕES: perguntas parecidas, mas com respostas diferentes =====
+const DESC=POOL[0].map(q=>{const m=q.q.match(/^Qual módulo (.+)\?$/);return m?{n:q.a,d:m[1][0].toUpperCase()+m[1].slice(1),q}:null}).filter(Boolean);
+DESC.forEach(x=>{x.q.t={q:`Qual descrição corresponde ao módulo ${x.n}?`,a:x.d,d:DESC.filter(y=>y!=x).map(y=>y.d)}});
+const T2={"O que é o DANFE?":["Qual termo corresponde a “Documento Auxiliar da Nota Fiscal Eletrônica”?","DANFE","SEFAZ;Chave de acesso;Série;Certificado digital"],
+"O que é a “série”":["Como se chama a subdivisão que organiza a numeração das notas?","Série","Chave de acesso;DANFE;Protocolo;Natureza da operação"],
+"Para que serve o certificado digital":["Qual recurso permite assinar digitalmente a nota?","Certificado digital","Tabela de preços;Limite de crédito;Série;DANFE"],
+"O que significa “faturar”":["Como se chama o ato de transformar o pedido em nota fiscal?","Faturar","Cancelar;Inutilizar;Homologar;Transferir"],
+"Qual a diferença entre o ambiente de testes":["Como se chama o ambiente de testes, sem valor fiscal?","Homologação","Produção;Contingência;Rascunho;Transmissão"]};
+POOL[1].forEach(q=>{for(const k in T2)if(q.q.startsWith(k)){const v=T2[k];q.t={q:v[0],a:v[1],d:v[2].split(";")}}});
+[["Qual a diferença entre cancelar uma nota","Uma nota autorizada saiu com o cliente errado. Devo cancelar ou inutilizar a numeração? Justifique.~Cancelar, pois a nota já foi autorizada; inutilizar serve só para numeração que não chegou a ser usada.~cancel|autorizada|inutiliz|numera,nao usad,sem uso"],
+["Quem pode ser responsável pelo pagamento do frete","O que significam frete CIF e frete FOB na nota?~CIF: o emitente (vendedor) paga o frete. FOB: o destinatário (comprador) paga.~cif|emitente,remetente,vendedor|fob|destinat,comprador"],
+["Qual a diferença entre o certificado digital em arquivo","Qual a diferença entre o certificado A1 e o A3?~O A1 é um arquivo instalado no computador; o A3 fica em cartão ou token, exige senha e é mais seguro.~a1,arquivo,pfx|a3,token,cartao|seguro,senha,dispositivo,fisico"],
+["O que significa ratear o frete","Como o frete de uma nota com 2 itens é dividido entre eles?~Proporcionalmente ao valor ou ao peso de cada item.~proporcion,rateio,distribu|valor,peso|item"],
+["Como é formado o valor total de um item","Um item tem quantidade 2, preço 100, desconto 10 e frete 5. Qual o valor total e como se chega nele?~2 vezes 100 dá 200, menos 10 de desconto, mais 5 de frete: total 195.~195|200|desconto|frete"],
+["Por que o sistema permite bloquear a emissão de notas com data retroativa","Qual risco existe em emitir uma nota com data anterior à da última nota emitida?~Quebra a cronologia da numeração e pode gerar problemas com a SEFAZ e com a escrituração.~cronolog,sequencia,numera|sefaz,fiscal,legisl|escritur,problema,rejei"]
+].forEach(([k,l])=>{const q=POOL[2].find(x=>x.q.startsWith(k));if(q)q.t=ds(l)[0]});
+const NV=["N1","N2","N3","N4","N5"];
+// ===== CONFIGURAÇÃO (Firebase) =====
 const FB="https://teste-junsoft-default-rtdb.firebaseio.com";
-const NV=["N1","N2","N3","N4","N5"],LV=[60,50,40,30,20];
-const EX=[
-"Emite os boletos em lote~~IPVA e IRPJ~Somente o ERP e o portal~SEFAZ~Receita Federal~Backups do banco~FastReport~Somente os funcionários do suporte~NF-e, boleto, SAT e PIX",
-"Oracle~Por mensagens de e-mail~Nenhum dos dois grava no banco~PHP com Laravel~Java Swing~Híbridos, em Ionic~Cerca de 5.000~~Excel e Access~Os módulos do desktop",
-"O ticket de suporte;O manual do cliente~~Apenas agendamentos;Somente exportação em arquivo~~1.000;10~2 minutos;1 segundo~Moeda formatada;Binário~~~A do ambiente de produção;A de uma versão antiga",
-"~32.767;1.000,00~Regra imposta pela SEFAZ;Limite de memória do servidor~~O número de linhas da tabela;O nome do domínio~Ao instalar o Firebird;Ao compilar o ERP~~Firebird 4.0, dialeto 1;Firebird 5.0.1, dialeto 1~Multiplicar por 100 antes;Arredondar o resultado~Duplicidade de registros;Bloqueio da migration",
-"Por backup restaurado;Por planilha de ajustes;Por e-mail ao suporte~~~Avisar o cliente por e-mail;Atualizar a documentação;Gerar um backup do banco~Por planilha enviada ao cliente;Por atualização do portal;Por rotina do GerNotas~Nada além do login;Uma reinicialização;Aprovação do cliente final~Ambiente e horário;IP da máquina;Tamanho do arquivo~Cadastro de empresas no ERP;Arquivo do Firebird;Parâmetros do usuário~Reinstalar o Firebird;Apagar o cache do ERP;Pedir um novo chamado~Porque é exigência do Firebird;Porque dispensa testes;Porque evita conflitos de licença",
-"Somente o horário de implantação;Apenas o nome do implantador;Só o tamanho do banco~Município e endereço, depois pessoa;Endereço e pessoa, depois município;Pessoa e endereço, depois município~Banco e agência;Empresa e centro de resultado;Vendedor e parcelamento~Vendedor e parcelamento;Município e endereço;Produto e grupo~Um banco novo pronto;Somente o log da importação;Uma planilha de conferência manual~~Consultar o legado e decidir sozinho;Apagar a coluna do arquivo;Perguntar só no fim da carga~Podem ser compartilhados por e-mail;São dados fictícios;Não têm CPF~Avisar só o cliente;Alterar a tabela direto;Guardar em nota pessoal~Usar uma migration sem chamado;Ignorar o teto e conferir depois;Pedir ao cliente para reduzir a comissão"];
-EX.forEach((ln,k)=>ln.split("~").forEach((x,i)=>{if(x)D[k+4][i].d.push(...x.split(";"))}));
-const $=document.getElementById("app"),V=5;
-const LIM=()=>LV[S.p];
-const sh=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+const KEY="AIzaSyCI9JHMMnHZRP-CXq9zMhNAWIZpoi1P9vA";   // Web API Key do projeto Firebase (ativa o login por e-mail). Vazio = sem login.
+const DOM="";    // opcional, ex.: "@junsoft.com.br" para aceitar só e-mails da empresa
+const AUTH=!!KEY;
+const $=document.getElementById("app"),V=5,LET="abcde";
+const LIM=()=>{const q=G&&G[S.p]&&G[S.p][S.i];return q&&!q.o?240:60};
+const hs=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+const mul=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+let rng=Math.random;
+const sh=a=>a.map(x=>[rng(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt=s=>{s=Math.round(s);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
 const cmp=(a,b)=>b.score-a.score||a.time-b.time;
-let S,G,RK,rkLocal=false,LOC=[],tmr=null,AC=null;
+const wk=(d=new Date())=>{const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())),n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);const y=t.getUTCFullYear();return y+"-W"+String(Math.ceil(((t-Date.UTC(y,0,1))/864e5+1)/7)).padStart(2,"0")};
+const WK=wk();
+let S,G,RK,HF=[],rkLocal=false,LOC=[],tmr=null,AC=null,U=null,MSG="",LMSG="";
 try{LOC=JSON.parse(localStorage.getItem("rk")||"[]")}catch(e){}
-// sorteia 10 das 20 perguntas de cada nível e embaralha perguntas e alternativas (N1 3 alternativas ... N5 7)
-const build=()=>[0,1,2,3,4].map(l=>sh(D[2*l].concat(D[2*l+1])).slice(0,10).map(q=>({q:q.q.replace(/^CHEFE( FINAL)?: /,""),a:q.a,e:q.e,o:sh([q.a,...sh(q.d).slice(0,l+2)])})));
-const fresh=()=>{G=build();S={p:0,i:0,lives:V,score:0,ans:false,hits:0,tot:0,view:"intro",saved:false,won:false,time:0,t0:0,left:60,w:0,c:99}};
+try{U=JSON.parse(localStorage.getItem("u")||"null")}catch(e){}
+// cada jogador recebe um sorteio próprio (por conta + semana): outras perguntas, outra ordem, outras variações e alternativas
+const mk=w=>w.d?{...w,o:sh([w.a,...sh(w.d).slice(0,4)])}:w;
+const build=()=>POOL.map(pl=>sh(pl).slice(0,10).map(q=>mk(q.t&&rng()<.5?q.t:q)));
+const fresh=seed=>{rng=seed?mul(seed):Math.random;G=build();S={p:0,i:0,lives:V,score:0,ans:false,hits:0,tot:0,view:"intro",saved:false,won:false,time:0,t0:0,left:60,w:0,c:99,txt:"",st:0}};
 fresh();
+const need=q=>Math.ceil(q.g.length*.6-1e-9);
+// validação automática: cada grupo é um conceito (sinônimos); acerta quem cobrir pelo menos 60% dos conceitos
+function grade(q,txt){const t=nz(txt),miss=[];let h=0;q.g.forEach(g=>{if(g.some(k=>t.includes(k)))h++;else miss.push(g[0])});return{h,n:q.g.length,miss,ok:txt.trim().length>=10&&h>=need(q)}}
 function tone(f,d,t,v,dl){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),s=AC.currentTime+(dl||0);o.type=t||"sine";o.frequency.setValueAtTime(f,s);g.gain.setValueAtTime(v||.15,s);g.gain.exponentialRampToValueAtTime(.0001,s+d);o.connect(g);g.connect(AC.destination);o.start(s);o.stop(s+d)}catch(e){}}
 const SFX={
 ok:()=>{tone(660,.12,"triangle",.2);tone(880,.22,"triangle",.2,.1)},
+life:()=>[784,988,1175,1568].forEach((f,k)=>tone(f,.18,"triangle",.17,k*.09)),
 err:()=>{tone(220,.25,"sawtooth",.13);tone(160,.3,"sawtooth",.13,.15)},
 warn:()=>{tone(520,.15,"square",.09);tone(520,.15,"square",.09,.22)},
 tick:()=>tone(900,.12,"square",.11),
 lose:()=>[400,330,260,170].forEach((f,k)=>tone(f,.4,"sawtooth",.14,k*.28)),
 start:()=>[523,659,784,1047].forEach((f,k)=>tone(f,.22,"triangle",.17,k*.12)),
 win:()=>[523,659,784,1047,784,1047,1319].forEach((f,k)=>tone(f,.25,"triangle",.17,k*.13))};
-function start(){fresh();S.view="q";SFX.start();nq();loadRank()}
-const url=()=>FB.replace(/\/$/,"")+"/ranking.json";
+// ===== login por e-mail (Firebase Auth via REST) =====
+const ERR={EMAIL_EXISTS:"Este e-mail já tem conta. Use Entrar.",EMAIL_NOT_FOUND:"E-mail ou senha incorretos.",INVALID_PASSWORD:"E-mail ou senha incorretos.",INVALID_LOGIN_CREDENTIALS:"E-mail ou senha incorretos.",WEAK_PASSWORD:"A senha precisa ter ao menos 6 caracteres.",INVALID_EMAIL:"E-mail inválido.",TOO_MANY_ATTEMPTS_TRY_LATER:"Muitas tentativas. Aguarde um pouco.",OPERATION_NOT_ALLOWED:"Login por e-mail/senha não está ativado no Firebase."};
+const sv=()=>{try{localStorage.setItem("u",JSON.stringify(U))}catch(e){}};
+async function idt(a,b){const r=await fetch(`https://identitytoolkit.googleapis.com/v1/${a}?key=${KEY}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}),j=await r.json();if(!r.ok)throw new Error(j.error&&j.error.message||"erro");return j}
+async function refresh(){const r=await fetch("https://securetoken.googleapis.com/v1/token?key="+KEY,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(U.rt)}),j=await r.json();if(!r.ok)throw new Error("TOKEN");U.id=j.id_token;U.rt=j.refresh_token;U.exp=Date.now()+j.expires_in*1000}
+const tok=async()=>{if(Date.now()>U.exp-60000)await refresh();sv();return U.id};
+async function doLogin(c){
+  const e=document.getElementById("em").value.trim(),p=document.getElementById("pw").value;
+  if(!e||p.length<6){LMSG="Informe e-mail e senha (mínimo 6 caracteres).";return show()}
+  if(DOM&&!e.toLowerCase().endsWith(DOM)){LMSG="Use um e-mail "+DOM;return show()}
+  try{
+    const j=await idt(c?"accounts:signUp":"accounts:signInWithPassword",{email:e,password:p,returnSecureToken:true});
+    U={email:e,uid:j.localId,id:j.idToken,rt:j.refreshToken,exp:Date.now()+j.expiresIn*1000,ver:false};
+    if(c){await idt("accounts:sendOobCode",{requestType:"VERIFY_EMAIL",idToken:j.idToken});sv();LMSG="Conta criada! Enviamos um e-mail de verificação. Confirme o link e clique em Entrar.";return show()}
+    const l=await idt("accounts:lookup",{idToken:j.idToken});
+    if(l.users[0].emailVerified){await refresh();U.ver=true}
+    sv();LMSG=U.ver?"":"E-mail ainda não verificado. Confirme o link enviado e clique em Entrar de novo.";show();
+  }catch(x){const m=x.message||"";LMSG=ERR[m]||ERR[m.split(" ")[0]]||"Não foi possível entrar ("+m+").";show()}
+}
+async function resend(){try{await idt("accounts:sendOobCode",{requestType:"VERIFY_EMAIL",idToken:U.id});LMSG="E-mail de verificação reenviado."}catch(e){LMSG="Não foi possível reenviar agora."}show()}
+function logout(){U=null;try{localStorage.removeItem("u")}catch(e){}show()}
+// ===== banco de dados (REST) e ranking semanal =====
+const dbu=p=>FB.replace(/\/$/,"")+"/"+p+".json";
+async function dbget(p){const r=await fetch(dbu(p));if(!r.ok)throw 0;return r.json()}
+async function dbput(p,v){const r=await fetch(dbu(p)+(AUTH?"?auth="+await tok():""),{method:AUTH?"PUT":"POST",body:JSON.stringify(v)});return r.ok}
+const top=o=>Object.values(o||{}).sort(cmp);
 async function loadRank(){
-  const loc=()=>{RK=LOC.slice().sort(cmp).slice(0,10);rkLocal=true};
-  if(FB){try{const r=await fetch(url());if(!r.ok)throw 0;const o=await r.json()||{};RK=Object.values(o).sort(cmp).slice(0,10);rkLocal=false}catch(e){loc()}}
-  else loc();
+  const loc=()=>{RK=LOC.filter(r=>r.w==WK).sort(cmp).slice(0,10);rkLocal=true};
+  if(FB){
+    try{RK=top(await dbget("ranking/"+WK)).slice(0,10);rkLocal=false}catch(e){loc()}
+    try{HF=await Promise.all([1,2,3,4,5].map(async k=>{const w=wk(new Date(Date.now()-7*864e5*k));return{w,t:top(await dbget("ranking/"+w)).slice(0,3)}}))}catch(e){HF=[]}
+  }else loc();
   if(S.view=="intro"||(S.view=="end"&&S.saved))show();
 }
+const MED=["🥇","🥈","🥉"];
 function rankHTML(){
   if(RK===undefined)return"<p>Carregando ranking…</p>";
   const note=rkLocal?`<p><small>${FB?"Sem conexão com o ranking online; mostrando o salvo neste navegador.":"Ranking salvo só neste navegador."}</small></p>`:"";
-  if(!RK.length)return"<p>Ninguém no ranking ainda. Seja o primeiro!</p>"+note;
-  return note+`<table><tr><th>#</th><th>Nome</th><th>Pontos</th><th>Tempo</th></tr>${RK.map((r,k)=>`<tr><td>${k+1}</td><td>${esc(r.name)} <small>· fase ${esc(r.phase)}</small></td><td>${esc(r.score)}</td><td>${fmt(r.time||0)}</td></tr>`).join("")}</table><p><small>Mais pontos fica na frente; em empate de pontos, vence o menor tempo total.</small></p>`;
+  if(!RK.length)return`<p>Ninguém no ranking desta semana ainda. Seja o primeiro!</p>`+note;
+  return note+`<table><tr><th>#</th><th>Nome</th><th>Pontos</th><th>Tempo</th></tr>${RK.map((r,k)=>`<tr class="${k<3?"m"+(k+1):""}"><td>${k<3?MED[k]:k+1}</td><td>${esc(r.name)} <small>· ${esc(r.phase)}</small></td><td>${esc(r.score)}</td><td>${fmt(r.time||0)}</td></tr>`).join("")}</table><p><small>Mais pontos fica na frente; em empate, vence o menor tempo total.</small></p>`;
+}
+function hofHTML(){
+  const rows=HF.filter(h=>h.t.length);
+  return`<aside class="hof"><h2>🏅 Últimas semanas</h2>${rows.length?rows.map(h=>`<div class="hw"><b>${h.w}</b>${h.t.map((r,k)=>`<div class="m${k+1}">${MED[k]} ${esc(r.name)} <small>${esc(r.score)}</small></div>`).join("")}</div>`).join(""):"<p><small>Ainda sem semanas anteriores.</small></p>"}</aside>`;
 }
 async function save(){
   const n=document.getElementById("nm").value.trim().slice(0,20);
   if(!n){document.getElementById("msg").textContent="Digite um nome.";return}
   if(S.saved)return;
-  const r={name:n,score:S.score,time:Math.round(S.time),hits:S.hits,phase:S.p+1,t:Date.now()};
+  const r={name:n,score:S.score,time:Math.round(S.time),hits:S.hits,phase:NV[S.p],t:Date.now()};
   let ok=false;
-  if(FB)try{ok=(await fetch(url(),{method:"POST",body:JSON.stringify(r)})).ok}catch(e){}
-  if(!ok){LOC.push(r);try{localStorage.setItem("rk",JSON.stringify(LOC))}catch(e){}}
+  if(FB)try{ok=await dbput("ranking/"+WK+(AUTH?"/"+U.uid:""),r)}catch(e){}
+  if(!ok){LOC.push({...r,w:WK});try{localStorage.setItem("rk",JSON.stringify(LOC))}catch(e){}}
   S.saved=true;await loadRank();show();
 }
-function head(){
-  return`<div class="card"><div class="top"><span>Nível ${NV[S.p]} · pergunta ${S.i+1}/10</span><span>⭐ ${S.score} pts</span><span>${"❤️".repeat(S.lives)}${"🖤".repeat(V-S.lives)}</span></div><div class="bar"><i style="width:${(S.p*10+S.i)*2}%"></i></div></div>`;
+async function start(){
+  if(AUTH){
+    if(!(U&&U.ver)){MSG="Entre com sua conta para jogar.";return show()}
+    let ok=false;try{ok=await dbput("plays/"+WK+"/"+U.uid,{t:Date.now(),e:U.email})}catch(e){}
+    if(!ok){MSG="Você já jogou nesta semana ("+WK+") ou não foi possível conectar. Volte na próxima semana!";return show()}
+  }
+  MSG="";fresh(AUTH?hs(U.uid+WK):0);SFX.start();nq();loadRank();
 }
+const hearts=()=>"❤️".repeat(Math.min(S.lives,V))+(S.lives>V?"🛡️":"")+"🖤".repeat(Math.max(0,V-S.lives));
+function head(){
+  return`<div class="card"><div class="top"><span>Nível ${NV[S.p]} · pergunta ${S.i+1}/10</span><span>⭐ ${S.score} pts</span><span>🔥 ${S.st%10}/10</span><span>${hearts()}</span></div><div class="bar"><i style="width:${(S.p*10+S.i)*2}%"></i></div></div>`;
+}
+function loginHTML(){
+  if(!AUTH)return"";
+  if(U&&U.ver)return`<div class="card"><p>Conectado como <b>${esc(U.email)}</b> · <button class="g" onclick="logout()">Sair</button></p><p><small>Cada e-mail pode jogar uma vez por semana (${WK}).</small></p></div>`;
+  return`<div class="card"><h2>🔐 Entre para jogar</h2><input id="em" type="email" placeholder="E-mail"> <input id="pw" type="password" placeholder="Senha (mín. 6 caracteres)"><br><button class="b" onclick="doLogin(0)">Entrar</button> <button class="g" onclick="doLogin(1)">Criar conta</button> ${U&&!U.ver?`<button class="g" onclick="resend()">Reenviar e-mail de verificação</button>`:""}<p class="fb">${esc(LMSG)}</p></div>`;
+}
+const canPlay=()=>!AUTH||(U&&U.ver);
 function show(){
   if(S.view=="intro"){
-    $.innerHTML=`<div class="card"><h1>🧭 A Jornada do Implantador</h1><p>50 perguntas sobre o JunsoftERP em 5 níveis de 10 perguntas, sorteadas de um banco de 100 a cada jogo. Cada pergunta vale 1 ponto.</p><p>De N1 a N5 aumentam as alternativas (3 a 7) e diminui o tempo por pergunta (60s, 50s, 40s, 30s e 20s). Se o tempo acabar, conta como erro. Você tem <b>5 vidas para a jornada inteira</b>. No fim, registre seu nome: mais pontos fica na frente e, em empate, vence o menor tempo total.</p><button class="b" onclick="start()">Começar</button></div><div class="card"><h2>🏆 Top 10</h2>${rankHTML()}</div>`;return}
+    $.innerHTML=`<div class="card"><h1>🧭 A Jornada do Implantador</h1><p>50 perguntas sobre o JunsoftERP em 5 níveis de 10, sorteadas de um banco de 100. Cada jogador recebe um sorteio próprio, com perguntas, ordem e alternativas diferentes. Cada pergunta vale 1 ponto.</p><p><b>N1 e N2:</b> múltipla escolha (a–e), 60 s por pergunta. <b>N3, N4 e N5:</b> respostas descritivas, 240 s por pergunta; o sistema avalia pelos conceitos-chave citados e mostra quantos você já atendeu enquanto digita.</p><p>Você tem <b>5 vidas</b>. A cada <b>10 acertos seguidos</b> ganha 1 vida; com as 5 cheias, ganha um 🛡️ escudo (máximo de 1). O ranking é <b>semanal</b>: mais pontos fica na frente e, em empate, o menor tempo total.</p>${MSG?`<p class="fb"><b>${esc(MSG)}</b></p>`:""}${canPlay()?`<button class="b" onclick="start()">Começar</button>`:""}</div>`+loginHTML()+`<div class="card"><h2>🏆 Top 10 da semana ${WK}</h2>${rankHTML()}</div>`+hofHTML();return}
   if(S.view=="phase"){
-    $.innerHTML=`<div class="card"><h2>✅ Nível ${NV[S.p]} concluído</h2><p class="big">${S.score} pts</p><p>Tempo total: ${fmt(S.time)} · Vidas: ${"❤️".repeat(S.lives)}</p><button class="b" onclick="S.p++;S.i=0;SFX.start();nq()">Próximo: ${NV[S.p+1]} (${G[S.p+1][0].o.length} alternativas, ${LV[S.p+1]}s)</button></div>`;return}
+    $.innerHTML=`<div class="card"><h2>✅ Nível ${NV[S.p]} concluído</h2><p class="big">${S.score} pts</p><p>Tempo total: ${fmt(S.time)} · Vidas: ${hearts()}</p><button class="b" onclick="S.p++;S.i=0;SFX.start();nq()">Próximo: ${NV[S.p+1]} (${S.p+1<2?"múltipla escolha":"resposta descritiva, 240 s"})</button></div>`;return}
   if(S.view=="end"){
     $.innerHTML=`<div class="card"><h2>${S.won?"🏆 Jornada concluída! Você é Lenda da Implantação":"💥 Fim das vidas no nível "+NV[S.p]}</h2><p class="big">${S.score} pts</p><p>Tempo total: ${fmt(S.time)} · Acertos: ${S.hits} de ${S.tot}</p>`+
-    (S.saved?"":`<p>Registre seu nome no ranking:</p><input id="nm" maxlength="20" placeholder="Seu nome"> <button class="b" onclick="save()">Salvar</button><p id="msg" class="fb"></p>`)+
-    `<button class="g" onclick="start()">Jogar de novo</button></div><div class="card"><h2>🏆 Top 10</h2>${rankHTML()}</div>`;
+    (S.saved?"":`<p>Registre seu nome no ranking da semana:</p><input id="nm" maxlength="20" placeholder="Seu nome"> <button class="b" onclick="save()">Salvar</button><p id="msg" class="fb"></p>`)+
+    (AUTH?`<p><small>Seu próximo jogo será na semana que vem.</small></p>`:`<button class="g" onclick="start()">Jogar de novo</button>`)+`</div><div class="card"><h2>🏆 Top 10 da semana ${WK}</h2>${rankHTML()}</div>`+hofHTML();
     if(RK===undefined)loadRank();return}
   const q=G[S.p][S.i];
   $.innerHTML=`<div class="side"><div>Tempo total<b id="ct">${fmt(S.time)}</b></div><div>Restante<b id="cr">${Math.ceil(S.left)}s</b></div></div>`+head()+`<div class="card"><div class="bar"><i id="tb" style="width:${S.left/LIM()*100}%;background:var(--er)"></i></div><h2>${q.q}</h2>`+
-  q.o.map((o,k)=>`<button class="o" ${S.ans?"disabled":""} onclick="pick(${k})">${o}</button>`).join("")+`<div id="fb" class="fb"></div></div>`;
+  (q.o?q.o.map((o,k)=>`<button class="o" ${S.ans?"disabled":""} onclick="pick(${k})"><b>${LET[k]})</b> ${o}</button>`).join(""):
+  `<p class="crit">Critérios: atenda ao menos <b>${need(q)}</b> de <b>${q.g.length}</b>. Atendidos: <b id="cc">${grade(q,S.txt).h}</b></p><textarea id="ans" rows="7" ${S.ans?"disabled":""} placeholder="Digite sua resposta (Ctrl+Enter envia)" oninput="crit()" onkeydown="if(event.ctrlKey&&event.key=='Enter')sendD()">${esc(S.txt)}</textarea>${S.ans?"":`<button class="b" onclick="sendD()">Enviar resposta</button>`}`)+`<div id="fb" class="fb"></div></div>`;
+}
+function crit(){
+  const q=G[S.p][S.i],a=document.getElementById("ans"),c=document.getElementById("cc");if(!a||!c)return;
+  const h=grade(q,a.value).h;c.textContent=h;c.style.color=h>=need(q)?"var(--ok)":"inherit";
 }
 function upd(){
   const g=id=>document.getElementById(id),L=S.left,c=Math.ceil(L);
@@ -226,20 +305,36 @@ function startT(){
     const c=Math.ceil(S.left);
     if(S.left<=10&&!S.w){S.w=1;SFX.warn()}
     if(c<=3&&c>0&&c!=S.c){S.c=c;SFX.tick()}
-    if(S.left<=0)pick(-1);
+    if(S.left<=0){G[S.p][S.i].o?pick(-1):sendD()}
   },200);
 }
-function nq(){S.view="q";S.ans=false;S.left=LIM();show();startT()}
-function pick(k){
-  if(S.ans)return;
-  clearInterval(tmr);
-  const q=G[S.p][S.i],ok=k>=0&&q.o[k]==q.a;
-  S.time+=Math.min(LIM(),(Date.now()-S.t0)/1000);
-  S.ans=true;S.tot++;
-  if(ok){S.score++;S.hits++;SFX.ok()}else{S.lives--;S.lives==0?SFX.lose():SFX.err()}
+function nq(){S.view="q";S.ans=false;S.txt="";S.left=LIM();show();startT();const a=document.getElementById("ans");if(a)a.focus()}
+function done(ok,html){
+  S.time+=Math.min(LIM(),(Date.now()-S.t0)/1000);S.ans=true;S.tot++;
+  if(ok){
+    S.score++;S.hits++;S.st++;SFX.ok();
+    if(S.st%10==0){
+      if(S.lives<V){S.lives++;html+="<br>🔥 10 acertos seguidos! Você ganhou 1 vida de volta."}
+      else if(S.lives==V){S.lives++;html+="<br>🔥 10 acertos seguidos! Vidas cheias: você ganhou um 🛡️ escudo (vida extra)."}
+      else html+="<br>🔥 10 acertos seguidos! O escudo já está ativo (máximo de 1).";
+      setTimeout(SFX.life,350);
+    }
+  }else{S.st=0;S.lives--;S.lives==0?SFX.lose():SFX.err()}
   show();upd();
+  document.getElementById("fb").innerHTML=html+`<br><button class="b" onclick="next()">Continuar</button>`;
+}
+function pick(k){
+  if(S.ans)return;clearInterval(tmr);
+  const q=G[S.p][S.i],ok=k>=0&&q.o[k]==q.a;
+  done(ok,(ok?"✅ Correto! +1 ponto.":(k<0?"⏰ Tempo esgotado. ":"❌ ")+"Resposta: <b>"+LET[q.o.indexOf(q.a)]+") "+q.a+"</b>"));
   document.querySelectorAll(".o").forEach((b,j)=>{if(q.o[j]==q.a)b.classList.add("ok");else if(j==k)b.classList.add("er")});
-  document.getElementById("fb").innerHTML=(ok?"✅ Correto! +1 ponto. ":(k<0?"⏰ Tempo esgotado. ":"❌ ")+"Resposta: <b>"+q.a+"</b>. ")+q.e+`<br><button class="b" onclick="next()">Continuar</button>`;
+}
+function sendD(){
+  if(S.ans)return;clearInterval(tmr);
+  const a=document.getElementById("ans"),q=G[S.p][S.i];
+  S.txt=a?a.value:"";
+  const r=grade(q,S.txt);
+  done(r.ok,(r.ok?"✅ Resposta aceita! +1 ponto. ":"❌ Resposta insuficiente. ")+`Critérios atendidos: ${r.h} de ${r.n} (mínimo ${need(q)}).`+(r.miss.length?` Faltou citar algo sobre: <i>${esc(r.miss.join(", "))}</i>.`:"")+`<br><b>Resposta modelo:</b> ${esc(q.m)}`);
 }
 function next(){
   if(S.lives==0){S.view="end";return show()}

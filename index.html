@@ -395,7 +395,7 @@ function sendD(){
   if(S.ans)return;clearInterval(tmr);
   const a=document.getElementById("ans"),q=G[S.p][S.i];
   S.txt=a?a.value:"";
-  const r=grade(q,S.txt);
+   const r=grade(q,S.txt);
   done(r.ok,(r.ok?"✅ Resposta aceita! +1 ponto. ":(r.sf?"❌ Resposta insuficiente. ":"❌ "+r.why+" "))+`Critérios atendidos: ${r.h} de ${r.n} (mínimo ${need(q)}).`+(r.miss.length?` Faltou citar algo sobre: <i>${esc(r.miss.join(", "))}</i>.`:"")+`<br><b>Resposta modelo:</b> ${esc(q.m)}`);
 }
 function next(){

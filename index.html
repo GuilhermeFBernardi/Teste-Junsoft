@@ -17,7 +17,7 @@ textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--
 :root{--gold:#b88a00;--silver:#7b8494;--bronze:#a4571f}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--gold:#ffd23f;--silver:#d5dae3;--bronze:#e8935a}}
 :root[data-theme="dark"]{--gold:#ffd23f;--silver:#d5dae3;--bronze:#e8935a}
-.crit{font-size:14px;color:var(--mu);margin:6px 0}.crit b{color:var(--tx)}
+.fm{font-size:13px}.crit{font-size:14px;color:var(--mu);margin:6px 0}.crit b{color:var(--tx)}
 .hof{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px;font-size:14px}.hof h2{font-size:1rem}.hw{margin-top:8px}.hw small{color:var(--mu)}
 @media(min-width:1180px){.hof{position:fixed;left:10px;top:10px;bottom:10px;width:210px;overflow:auto;margin:0}}
 .tg{display:block;margin:10px 16px 0 auto}
@@ -84,66 +84,66 @@ O que é a “série” de uma nota fiscal?|Subdivisão que organiza a numeraç�
 O que identifica a chave de acesso de uma nota e quantos dígitos ela tem?|Identifica a nota de forma única, com 44 dígitos|Identifica o cliente, com 11 dígitos;Identifica o produto, com 8 dígitos;Identifica o vendedor, com 14 dígitos;Identifica a série, com 3 dígitos
 Além da NF-e, que outros documentos fiscais eletrônicos o sistema emite?|NFC-e, CT-e, MDF-e e NFS-e|Somente NF-e;Apenas boleto e recibo;SPED e DARF;Duplicata e cheque
 Para que servem as bibliotecas compartilhadas (Shared), como o jFaturamento?|Reaproveitar regras comuns entre vários módulos|Guardar backups;Imprimir relatórios;Controlar o caixa;Cadastrar usuários`),
-ds(`Qual a diferença entre receber a resposta do governo na hora e receber depois, por meio de um recibo de consulta?~Na resposta síncrona o governo autoriza na hora. Na assíncrona o sistema envia o lote, recebe um recibo e consulta o resultado depois.~sincron,na hora,imediat|assincron,recibo,lote|consult,depois
-O que o sistema pode fazer com o boleto no momento da emissão da nota, dependendo da configuração da série?~Gerar ou não os boletos automaticamente a partir das parcelas, conforme a configuração da série.~gera,emit|parcela,titulo,financeiro|serie,configur
+ds(`Quando o governo não responde à autorização na mesma hora, o que o sistema recebe e o que precisa fazer em seguida?~Recebe um recibo do lote enviado e precisa consultar o resultado mais tarde.~recibo|consult,verific,busca|lote,assincron,processamento
+Quando uma nota é emitida, o que o sistema pode fazer automaticamente com os boletos dos títulos a receber?~Gerar os boletos automaticamente a partir das parcelas, se isso estiver ativado na configuração da série.~gera,cria,imprime|parcela|serie,configur,parametro
 Por que o sistema guarda os dados eletrônicos da nota (protocolo, XML) separados dos dados comerciais?~Porque são dados fiscais e técnicos, diferentes da parte comercial; separar facilita auditoria, reenvio e organização.~fiscal,eletronic,tecnic|comercial,negocio|auditor,reenvi,organiz,separa
 Onde fica guardado o arquivo da nota depois que ela é autorizada?~O XML autorizado, com o protocolo, fica armazenado no banco de dados do sistema.~xml|banco,pasta,diretorio,armazen|protocolo,autoriz
 Como o sistema calcula os impostos de cada item e de quais informações ele depende?~Por item, usando NCM, natureza da operação, situação tributária e estados de origem e destino, conforme as regras cadastradas.~ncm|natureza,cfop,operacao|estado,uf,origem,destino|situacao tribut,cst,csosn,regra
 O que é substituição tributária e como o sistema lida com ela?~O ICMS é recolhido antecipadamente por um substituto para toda a cadeia; o sistema calcula base e valor do ST por item conforme a regra (MVA).~antecip,cadeia,substitut|base,mva,st|item,calcul,regra
 O que significa ratear o frete entre os itens da nota?~Distribuir o valor do frete proporcionalmente entre os itens, por valor ou peso, compondo o total de cada item.~distribu,divid,proporcion,rate|item|valor,peso
-Como é formado o valor total de um item na nota (quantidade, preço, desconto, frete e despesas)?~Quantidade vezes preço, menos o desconto, mais o frete e as despesas.~quantidade|preco|desconto|frete|despesa
+Descreva a conta que o sistema faz para chegar ao valor total de um item da nota, usando as operações matemáticas envolvidas.~Multiplica a quantidade pelo preço, subtrai o desconto e soma o frete e as despesas.~multipl,vezes|subtra,menos,abate|soma,mais,acresc|despesa,frete,desconto
 Como o sistema sabe que um pedido já foi faturado?~Grava no pedido a quantidade faturada de cada item e o vínculo com a nota, atualizando a situação do pedido.~vincul,relaciona,refer|quantidade,item,saldo|situac,status,fatur
-Quais são as situações possíveis de uma nota (rascunho, pendente, válida, cancelada e excluída) e o que cada uma significa?~Rascunho: em edição. Pendente: enviada sem resposta. Válida: autorizada. Cancelada: anulada na SEFAZ. Excluída: removida antes de emitir.~rascunho|pendente|valida,autorizada|cancelada|excluida
-O que acontece quando o serviço do governo está fora do ar no momento da emissão?~A nota fica pendente para reenvio ou é emitida em contingência.~contingencia|pendente,aguard,reenvi,tent
-Qual a diferença entre cancelar uma nota e inutilizar uma numeração?~Cancelar anula uma nota já autorizada; inutilizar informa ao governo uma numeração que não será usada.~cancel,anula,autorizada|inutiliz,numera|nao usad,pulad,sem uso,nao foi utiliz,nao sera
-O que é uma Carta de Correção e que tipo de erro ela pode corrigir?~Evento que corrige erros em campos da nota que não alterem valores, destinatário ou data, como dados complementares.~evento,carta|erro,corrig|nao altera,valor,imposto,destinat,data
+O que significa, na prática, cada situação de uma nota no sistema: rascunho, pendente, válida, cancelada e excluída?~Rascunho: ainda em edição e não enviada. Pendente: enviada e aguardando resposta. Válida: autorizada pelo governo. Cancelada: anulada por um evento. Excluída: apagada antes de ser emitida.~edic,digit,nao enviad,nao foi enviad,nao transmit|sem resposta,aguard,esper,nao confirm|autoriz,aprovad,aceit|anulad,desfeit,evento|removid,apagad,descartad,nunca emitid
+O que acontece quando o serviço do governo está fora do ar no momento da emissão?~A nota fica pendente para reenvio ou é emitida em contingência.~contingencia|pendente,aguard,espera|reenvi,tent,volta,depois
+Em que situação se usa o cancelamento e em que situação se usa a inutilização?~Cancelamento anula uma nota que já foi autorizada. Inutilização informa à SEFAZ um número que nunca foi usado em nenhuma nota.~autorizada,ja aprovad,ja emitid|numero,numeracao,sequencia|nunca,nao usad,pulad,sem uso|sefaz,governo,informar,comunic
+Para que serve a Carta de Correção e quais informações da nota ela não pode alterar?~Serve para corrigir erros em campos da nota sem cancelá-la, mas não pode mudar valores, impostos, destinatário nem data.~evento,sefaz,sem cancel,registra|valor,imposto,preco,base|destinat,cliente,cnpj|data,emissao
 Como o sistema pode impedir temporariamente a emissão de novas notas?~Por parâmetro de bloqueio de emissão, na série ou na configuração.~bloque,impedir,travar|serie,parametro,configur,emiss
 É possível editar uma nota depois de emitida? Em que condições?~Autorizada não se edita: só corrige por Carta de Correção ou cancela e emite outra. Rascunho ou nota reaberta pode ser editada.~nao,autorizada|carta,cancel|rascunho,reabert,pendente
-Quem pode ser responsável pelo pagamento do frete na nota? Quais são as opções?~Emitente (CIF), destinatário (FOB), terceiros ou sem frete.~emitente,remetente,cif|destinat,fob|terceiro|sem frete,proprio,sem ocorr
+Quem pode ser responsável pelo pagamento do frete na nota? Quais são as opções?~O frete pode ficar por conta do emitente (CIF), do destinatário (FOB), de terceiros ou ser sem frete.~emitente,remetente,cif|destinat,fob|terceiro|sem frete,proprio,sem ocorr
 Qual a vantagem de a numeração das notas ser automática por série?~Evita números repetidos ou pulados, mantém a sequência controlada por série e reduz erro humano.~repetid,duplic|pulad,sequenc,ordem|erro,seguranca,automatic
-Para que serve o envio automático por e-mail após a autorização da nota?~Enviar o XML e o DANFE ao cliente assim que autorizada, agilizando e evitando envio manual.~xml,danfe|cliente,destinat|autom,agil,manual
+Quais arquivos o sistema envia automaticamente por e-mail depois que a nota é autorizada, e a quem?~Envia o XML e o DANFE ao cliente (destinatário).~xml|danfe,pdf|cliente,destinat,comprador
 Qual a diferença entre o certificado digital em arquivo e o certificado em cartão ou token?~O A1 é um arquivo instalado no computador; o A3 fica em cartão ou token e exige dispositivo e senha, sendo mais seguro.~a1,arquivo,pfx|a3,token,cartao|seguro,senha,dispositivo,fisico
 Por que o sistema permite bloquear a emissão de notas com data retroativa?~Para manter a cronologia fiscal e evitar problemas com a SEFAZ e a escrituração.~cronolog,sequencia,ordem|fiscal,sefaz,legisl,escritur|retroativ,anterior,data`),
-ds(`Descreva, passo a passo, o caminho de uma nota desde o rascunho até ser autorizada.~Rascunho, validação dos dados, numeração, geração e assinatura do XML, envio à SEFAZ e autorização com protocolo.~rascunho|valid|xml,assin|envi,sefaz|autoriz,protocolo
-Que etapas o sistema executa para enviar uma nota ao governo (certificado, geração do arquivo, assinatura, validação e envio)?~Carrega o certificado, gera o XML, assina, valida o arquivo e envia, tratando o retorno.~certificado|xml,arquivo|assin|valid|envi
+ds(`Descreva os passos que o sistema executa com uma nota depois que ela é digitada, até o governo autorizá-la.~Valida os dados, numera a nota, gera e assina o XML, envia à SEFAZ e recebe a autorização com o protocolo.~valid,confer|numera,numero|xml|assin|sefaz,transmit,envi|protocolo,retorno
+Quais são, em ordem, as etapas técnicas que o sistema executa para enviar uma nota ao governo?~Carrega o certificado digital, gera o arquivo XML, assina o XML, valida o arquivo e envia à SEFAZ.~certificad|xml|assin|valid,schema|sefaz,webservice,transmit
 Que informações formam a chave de acesso de uma nota e para que serve o dígito verificador no final?~44 dígitos com UF, data (ano e mês), CNPJ do emitente, modelo, série, número e código; o dígito verificador detecta erro de digitação.~uf,estado|cnpj|modelo,serie,numero|dv,digito verificador,verific|44
 O que acontece no sistema, em cadeia, quando o governo autoriza uma nota?~Grava protocolo e XML, muda a situação para válida, baixa o estoque, gera os títulos financeiros e libera DANFE e e-mail.~protocolo,xml|valida,situacao,status|estoque|financeiro,titulo,parcela|email,danfe
 O que acontece com a nota quando o governo recusa o envio ou não consegue responder por instabilidade?~Na recusa (rejeição) a nota é corrigida e reenviada; na instabilidade fica pendente para consulta posterior ou segue em contingência.~rejei,recus,erro|corrig,reenvi|pendente,consult|contingencia
 O que o sistema desfaz ou ajusta quando uma nota autorizada é cancelada?~Estorna o estoque, cancela os títulos financeiros, registra o evento de cancelamento e atualiza a situação para cancelada.~estoque|financeiro,titulo,parcela|evento,protocolo|cancelada,situacao
-Quais prazos para cancelar uma nota aparecem na documentação e por que o sistema os valida antes de cancelar?~Em geral até 24 horas, com prazos maiores conforme regras do estado; o sistema valida para evitar rejeição da SEFAZ.~24|horas,prazo,dias|sefaz,rejei,estado,legisl|valid
-Descreva como se opera em contingência (sem o serviço normal do governo) e como voltar ao funcionamento normal depois.~Emite as notas em modo de contingência e, quando o serviço normaliza, transmite as notas pendentes e regulariza.~contingencia|emit,gera|normaliz,volta,retorn,restabelec|transmit,envi,regulariz
-Em que situação cada modo de contingência é indicado: queda de internet, governo do estado fora do ar e governo nacional fora do ar?~Queda de internet: contingência offline. Estado fora do ar: SVC (SEFAZ virtual). Ambiente nacional fora: EPEC.~offline,fs,formulario|svc,virtual|epec,nacional
-Em um pedido faturado parcialmente, como o sistema acompanha quais itens já viraram nota?~Registra por item a quantidade já faturada e o saldo, vinculando cada nota ao item e marcando o pedido como parcial.~item|quantidade,saldo|vincul,nota|parcial
+Qual o prazo geral para cancelar uma nota autorizada e o que acontece se esse prazo for ultrapassado?~Em geral até 24 horas depois da autorização; passado o prazo a SEFAZ rejeita o cancelamento e é preciso seguir outro procedimento.~24|hora|rejei,recusa,nao permit,nao aceit,bloque|sefaz,estado,legisl
+Se o serviço normal do governo estiver indisponível, como a empresa continua emitindo notas e o que faz quando o serviço volta?~Emite as notas em modo de contingência e, quando o serviço volta, transmite as notas e regulariza as pendências.~contingencia|transmit,reenvi,regulariz|pendenc,pendente,confer,autoriz
+Em que situação cada modo de contingência é indicado: queda de internet, governo do estado fora do ar e governo nacional fora do ar?~Com queda de internet usa-se a contingência offline; com o estado fora do ar, o SVC (SEFAZ virtual); com o ambiente nacional fora, o EPEC.~offline,fs,formulario|svc,virtual|epec,nacional
+Em um pedido faturado parcialmente, como o sistema acompanha quais itens já viraram nota?~Registra por item a quantidade já faturada e o saldo, vinculando cada nota ao item e mostrando o que ainda falta faturar.~quantidade,saldo|vincul,relacion,refer,liga|restante,pendente,falta,ainda nao
 Como as parcelas a receber são definidas a partir da nota emitida?~Pelo parcelamento ou condição de pagamento, dividindo o valor total em parcelas com datas de vencimento.~parcelamento,condicao|valor,total|vencimento,data|titulo,parcela
-Como o sistema trata o estoque e os impostos em uma devolução parcial?~Considera só os itens e quantidades devolvidos, devolve o estoque proporcional e recalcula os impostos proporcionalmente.~item,quantidade,proporcion|estoque|imposto,icms,tribut|parcial
-Por que o imposto de um mesmo produto pode mudar conforme o estado de origem e o de destino da venda?~Porque a alíquota de ICMS e os benefícios dependem da UF de origem e de destino, interna ou interestadual.~aliquota,icms|origem|destino|estado,uf,interestadual
+Numa devolução em que o cliente devolve só parte da venda, o que o sistema faz com o saldo de mercadorias e com os impostos?~Devolve ao estoque só as quantidades devolvidas e recalcula os impostos proporcionalmente a elas.~estoque|quantidade,item|icms,tribut,recalcul|proporcion,somente,so a parte,apenas
+Por que o imposto de um mesmo produto pode mudar entre duas vendas, mesmo sem alterar o produto?~Porque a alíquota do ICMS depende do estado de origem e do estado de destino da venda.~aliquota,icms|origem,vendedor,emitente|destino,comprador,cliente|interestadual,uf,estado
 Em que situação uma venda para outro estado gera imposto também para o estado do comprador?~Quando o destinatário é consumidor final não contribuinte: o DIFAL reparte o ICMS com o estado de destino.~nao contribuinte,consumidor final|difal,diferencial,partilha|destino
-Como a nota emitida se conecta ao transporte (conhecimento de transporte e manifesto de carga)?~O CT-e referencia as chaves das NF-e transportadas e o MDF-e reúne os documentos da carga.~ct-e,cte,conhecimento|mdf,manifesto|chave|carga,transport
-Como cada item vendido alimenta as obrigações fiscais da empresa, como o SPED?~Cada item guarda CFOP, CST, NCM e valores de impostos que formam os registros e a apuração do SPED.~cfop,cst,ncm,imposto|sped|registro,escritur,apuracao,obrigac
+Como a nota emitida se relaciona com o CT-e e com o MDF-e?~O CT-e cita as chaves das NF-e transportadas e o MDF-e reúne os documentos da mesma carga.~chave|reune,agrup,conjunto,junta|carga,viagem|transport,veiculo,motorista
+Quais informações de cada item vendido são usadas para montar as obrigações enviadas ao governo?~CFOP, CST, NCM e os valores de base e de impostos de cada item formam os registros da escrituração fiscal.~cfop|cst,situacao tribut|ncm|base,valor,imposto,icms
 Para que serve a inutilização de numeração e em que situação ela é necessária?~Informar à SEFAZ numeração pulada ou não usada, por falha ou erro, para não deixar buracos na sequência.~numera,sequenc|pulad,nao usad,perdid,falha|sefaz,informar,comunic
 Que informações por item guardadas na nota permitem calcular margem de lucro e comissão?~Custo, preço de venda, desconto e percentual de comissão do vendedor em cada item.~custo|preco,venda|desconto|comissao,percentual,vendedor
-Por que o sistema separa as configurações por série de nota das configurações gerais de faturamento?~Cada série pode ter regras próprias (modelo, ambiente, boleto, numeração) enquanto as gerais valem para todas, dando flexibilidade.~serie|propri,diferen,especific|geral,todas|boleto,modelo,ambiente,numera,flexib
-Que verificações o sistema faz antes de numerar e enviar uma nota ao governo?~Valida certificado, dados obrigatórios, cadastros, impostos, numeração e regras de bloqueio e data.~certificado|obrigator,cadastro,dados|imposto,tribut|numera|bloque,data`),
-ds(`Uma empresa vende um produto com substituição tributária para um cliente de outro estado que não é contribuinte. Que cálculos fiscais o sistema precisa fazer e como eles aparecem nos itens da nota?~Calcula o ICMS próprio, a base e o valor do ICMS-ST conforme a regra, e o DIFAL por ser não contribuinte; tudo detalhado em cada item.~icms|st,substitui|difal,diferencial|item,base|nao contribuinte,consumidor
-Um pedido com 10 itens é faturado em duas notas diferentes. Descreva os efeitos no estoque, no financeiro e no acompanhamento do pedido.~Cada nota baixa o estoque dos seus itens e gera suas próprias parcelas; o pedido fica parcial, com saldo, até faturar o restante.~estoque|financeiro,parcela,titulo|parcial,saldo|duas notas,cada nota|faturado,encerr
-Uma nota autorizada, que já baixou estoque, gerou parcelas e está ligada a um documento de transporte, precisa ser cancelada. Descreva o efeito em cascata.~Cancela na SEFAZ por evento, estorna estoque e títulos, e é preciso tratar antes o CT-e ou MDF-e vinculado.~evento,sefaz,cancel|estoque|financeiro,titulo,parcela|ct-e,cte,transporte,mdf|vinculad,antes,depend
-A internet do escritório cai durante um dia de grande movimento de vendas. Como a empresa deve proceder para continuar emitindo e como regulariza tudo depois?~Entra em contingência offline e continua emitindo; quando a internet volta, transmite as notas e confere pendências e rejeições.~contingencia|continuar,emitir|volta,normaliz|transmit,envi|pendente,rejei,confer,regulariz
-Como as configurações da série, do cliente e do faturamento geral se combinam para decidir qual série usar e se o boleto será gerado?~Vale a mais específica: cliente, depois série, depois a configuração geral; isso define a série e se gera boleto.~serie|cliente|geral,faturamento|precedencia,prioridade,sobrepoe,especific|boleto
-Uma nota é reaberta para corrigir um item. Como o sistema decide se os impostos devem ser recalculados e que permissões influenciam isso?~Depende de parâmetro e da permissão do usuário para editar e recalcular; alterando item ou valor, os impostos são recalculados.~reabr,reabert|recalcul|permiss|parametro,configur|item,imposto
-Como o frete é distribuído entre os itens e de que forma isso afeta o valor final de cada item e os impostos?~É rateado proporcionalmente ao valor ou peso de cada item, soma ao valor do item e pode entrar na base dos impostos.~rateio,proporcion,distribu|valor,peso|item|imposto,base|total
-Que configurações precisam estar corretas antes de uma empresa passar do ambiente de testes para o de produção na emissão de notas?~Certificado válido, ambiente de produção, série e numeração, dados da empresa, tributação e e-mail, com testes feitos em homologação.~certificado|ambiente,producao|serie,numera|empresa,cadastro|imposto,tribut,regra|homologa,teste
-Explique o papel de cada peça do processo de emissão (tela de nota, motor fiscal, painel de transmissão e assinatura) e como elas cooperam.~A tela coleta os dados, o motor fiscal calcula e valida os impostos, o painel de transmissão envia e consulta, e a assinatura assina o XML.~tela|motor,calcul|painel,transmiss,envi|assin|xml,coopera,integra
-De que formas é possível acessar informações de faturamento (desktop, portal web e API) e para que serve cada uma?~O desktop é a operação completa; o portal web serve consulta e pedidos para clientes e parceiros; a API serve integrações com outros sistemas.~desktop|portal|api|integra|consult,pedido,operac
-Explique o ciclo completo de uma venda, do pedido até as obrigações fiscais, citando o que cada módulo faz no caminho.~Pedido, faturamento (nota), autorização fiscal, baixa de estoque, títulos no financeiro, contábil e SPED.~pedido|faturament,nota|estoque|financeiro,boleto,titulo|fiscal,sped|contab
-Compare cancelamento, Carta de Correção e inutilização: em que situação usar cada um e qual o efeito de cada um no sistema.~Cancelamento anula nota autorizada e estorna estoque e financeiro; Carta de Correção corrige campos sem alterar valores; inutilização informa numeração não usada.~cancel|carta,correcao,cce|inutiliz|estoque,financeiro|numera|erro,campo
-Compare uma venda de balcão (PDV) com uma venda por pedido faturado: documentos emitidos, módulos envolvidos e etapas.~O PDV emite NFC-e ou cupom na hora, com pagamento no ato; o pedido passa por etapas até o faturamento e emite NF-e, com parcelas a prazo.~pdv,balcao,caixa|nfc,sat,cupom|pedido|nf-e,nfe|prazo,parcela,financeiro
-Como as classificações fiscais (natureza da operação, situação tributária, NCM e regras por estado) contribuem para o cálculo do imposto de um item?~A natureza define o CFOP, a situação tributária define o tratamento, o NCM define alíquotas e ST, e as regras por estado definem a alíquota.~natureza,cfop|situacao tribut,cst|ncm|estado,uf|aliquota,imposto
-Quais são os tipos de nota (saída, entrada, devolução e transferência) e como cada um afeta o estoque e o financeiro?~Saída baixa estoque e gera a receber; entrada soma estoque e gera a pagar; devolução inverte; transferência move estoque sem financeiro.~saida|entrada|devolu|transfer|estoque|financeiro
+Por que algumas configurações são definidas para cada numeração de nota e outras valem para todo o faturamento?~Porque cada série pode ter regras próprias (modelo, ambiente, boleto) enquanto as configurações gerais valem para todas.~serie|propri,diferent,especific|geral,todas,comum|modelo,ambiente,boleto
+Que conferências o sistema faz antes de enviar uma nota ao governo?~Confere certificado, dados obrigatórios, cadastros, impostos, número e regras de bloqueio ou data.~certificad|obrigator,cadastr|imposto,tribut|numero,serie,sequenc|bloque,data`),
+ds(`Um produto com recolhimento antecipado do imposto pela cadeia é vendido para um consumidor final de outro estado. Que valores o sistema precisa calcular em cada item da nota?~ICMS próprio, base e valor do ICMS-ST (com MVA) e o DIFAL do consumidor final de outro estado.~icms|st,mva,substitu|difal,diferencial,partilha|base
+Um pedido com 10 itens é faturado em duas notas diferentes. Explique como cada nota afeta as mercadorias, os valores a receber e a situação do pedido.~Cada nota baixa o estoque só dos seus itens e gera suas próprias parcelas a receber; o pedido fica parcial, com saldo, até o restante ser faturado.~estoque|parcela,titulo|parcial,saldo,restante|propri,somente,so dos
+Uma nota autorizada, que já movimentou mercadorias, gerou parcelas e está vinculada a um documento de transporte, precisa ser cancelada. Descreva o efeito em cascata.~Cancela na SEFAZ por evento, devolve as mercadorias ao estoque, estorna as parcelas e exige tratar antes o CT-e ou MDF-e vinculado.~evento,sefaz|estoque,devolv|estorn,baix|ct-e,cte,mdf,manifesto,conhecimento|antes,primeiro,depend
+A internet do escritório cai durante um dia de grande movimento de vendas. Como a empresa deve proceder para continuar emitindo e como regulariza tudo depois?~Entra em contingência offline e continua emitindo; quando a internet volta, transmite as notas e confere pendências e rejeições.~contingencia|offline,sem conexao,mesmo sem,sem internet,local|volta,normaliz,restabelec|transmit,envi|pendente,rejei,confer,regulariz
+Existe uma regra no cadastro do cliente, outra na série da nota e outra no faturamento geral. Qual delas vale e como isso decide a série usada e a geração do boleto?~Vale a regra mais específica: primeiro a do cliente, depois a da série e por último a geral; o resultado define a série usada e se o boleto é gerado.~prevalec,preced,priorid,especific,sobrepo|primeiro,depois,ultimo,ordem,hierarq|gera,cobranca,titulo
+Uma nota é reaberta para corrigir um item. De que depende o sistema refazer o cálculo dos impostos?~Depende de parâmetro de configuração e da permissão do usuário; se o item ou o valor mudam, os impostos são recalculados.~parametro,configur|permiss|recalcul,refaz,calcula de novo|valor,preco,quantidade
+Como o frete de uma nota é repartido entre os produtos vendidos e qual o efeito disso no preço final de cada produto e nos impostos?~É rateado proporcionalmente ao valor ou ao peso de cada produto, soma ao valor dele e pode entrar na base de cálculo dos impostos.~ratea,proporcion,distribu,divid|valor,peso|soma,acresc,compoe|base,calculo
+Antes de emitir notas reais, que itens de configuração a empresa precisa conferir e que teste deve ter feito?~Certificado digital válido, ambiente de produção selecionado, série e numeração, dados da empresa, tributação e e-mail; e ter testado no ambiente de homologação.~certificad|producao|serie,numera|empresa,cadastro|tribut,imposto|homologa
+Quais componentes do sistema participam da emissão de uma nota, da digitação até o envio ao governo, e o que cada um faz?~A tela coleta os dados; o motor fiscal calcula e valida os impostos; o painel de transmissão envia e consulta o retorno; a assinatura assina o XML com o certificado.~tela,formulario|motor|painel,transmiss|assin|xml,certificado
+Por quais três meios um usuário ou outro sistema consegue acessar informações de faturamento, e para que serve cada um?~O desktop é a operação completa; o portal web serve consulta e pedidos de clientes e parceiros; a API serve integrações com outros sistemas.~desktop|portal|api|integra|consult,pedido,operac
+Descreva o ciclo de uma venda desde a digitação da proposta do cliente até as obrigações fiscais, citando o que cada módulo faz no caminho.~Pedido, faturamento (nota), autorização fiscal, baixa de estoque, títulos no financeiro, contábil e SPED.~pedido|faturament,nota|estoque|financeiro,boleto,titulo|sped|contab
+Uma nota autorizada precisa de ajuste. Compare as três saídas do sistema (anular a nota, corrigir só um campo, avisar numeração sem uso) e diga o efeito de cada uma.~Cancelamento anula a nota e estorna estoque e financeiro; Carta de Correção corrige campos sem alterar valores; inutilização informa numeração não usada.~cancel|carta,cce|inutiliz|estoque,financeiro|valor,imposto,destinat|sefaz,evento
+Compare as duas formas de vender no sistema: direto no caixa e por pedido faturado depois. Que documentos fiscais são emitidos e como é o pagamento em cada uma?~No caixa (PDV) emite-se NFC-e ou cupom na hora, com pagamento no ato; no pedido emite-se NF-e depois do faturamento, com parcelas a prazo.~nfc,sat,cupom|nf-e,nfe|prazo,parcela|ato,imediat,na hora|pdv,balcao
+Como o sistema decide qual imposto cobrar de um item: que informações cadastradas determinam o tratamento e a alíquota?~A natureza da operação define o CFOP, a situação tributária define o tratamento, o NCM define alíquotas e ST, e as regras por estado definem a alíquota.~natureza,cfop|situacao tribut,cst,csosn|ncm|estado,uf,origem|regra,tabela,beneficio
+Para cada situação, diga o tipo de nota emitido e o efeito no estoque e no financeiro: (a) venda, (b) compra, (c) cliente devolvendo mercadoria, (d) mover mercadoria entre filiais.~Venda é nota de saída: baixa estoque e gera a receber. Compra é entrada: soma estoque e gera a pagar. Devolução inverte o efeito original. Transferência move estoque entre filiais sem financeiro.~saida|entrada|devolu,inverte,estorna,contrario|transfer,sem financeiro|a receber,receber|a pagar,pagar
 Por que a nota pendente é uma situação crítica? Quais as possíveis causas, como ela se resolve e que caminhos pode seguir?~Foi enviada sem resposta, então não se sabe se foi autorizada; causa comum é instabilidade ou queda; resolve-se consultando recibo ou chave e pode virar autorizada ou rejeitada.~sem resposta,nao sabe,incert,autoriz|instabil,queda,internet,causa|consult,recibo,chave|rejei,autoriz,cancel
-Como as permissões de edição e de recálculo podem ser combinadas para evitar notas com impostos incorretos?~Quem edita itens deve ser obrigado a recalcular; permissão de editar sem recalcular fica restrita a perfis específicos.~permiss|edi|recalcul|imposto|perfil,usuario,restri
+Como configurar o acesso dos usuários para impedir que uma nota seja alterada e emitida com tributos desatualizados?~Dar a poucos perfis a permissão de editar sem recalcular e exigir o recálculo dos impostos ao alterar itens.~permiss,perfil|recalcul,refaz|imposto,icms|restri,poucos,limit,somente,apenas|edi
 Imagine uma empresa de recapagem de pneus que usa o JunsoftERP. Quais módulos entram em ação do pedido do cliente até o faturamento e o recebimento?~Pedido ou ordem de serviço, coleta do pneu, produção por etapas, laudo, faturamento da nota, financeiro no recebimento e transporte.~pedido,ordem|coleta|producao,etapa|faturament,nota|financeiro,receb|laudo,transporte
-Imagine uma cooperativa de leite usando o sistema. Como os módulos de coleta, financeiro, notas fiscais e transporte se conectam desde a coleta até o pagamento e a entrega?~A coleta no app grava via API no banco, o financeiro paga os produtores, as notas são emitidas e o transporte entrega com CT-e e MDF-e.~coleta,captac|api,banco|financeiro,pagamento,produtor|nota|transporte,entrega,ct-e,mdf
-Como os componentes do ecossistema (programa desktop, APIs, portal web, aplicativos móveis e banco de dados) se integram quando uma venda é feita em um aplicativo de campo e depois consultada no portal?~O app grava a venda pela API no banco Firebird; o desktop e o portal web leem o mesmo banco, então a venda aparece no portal.~app,aplicativo,mobile|api|banco,firebird|desktop|portal`)];
+Descreva como o leite coletado numa cooperativa chega, passo a passo, até a emissão das notas, o pagamento ao produtor e a entrega do produto.~A coleta é registrada no aplicativo, que grava via API no banco; o financeiro paga os produtores, as notas são emitidas e o transporte entrega com CT-e e MDF-e.~app,aplicativo,celular,mobile|api,banco|nf-e,nfe,emit,xml|financeiro,receb|ct-e,mdf,transport
+Uma venda feita num celular em campo precisa aparecer depois num site de consulta. Explique o caminho dos dados entre os componentes do sistema.~O aplicativo grava a venda pela API no banco Firebird; o desktop e o portal web leem o mesmo banco, então a venda aparece no portal.~app,aplicativo|api|banco,firebird|desktop|portal,web`)];
 // ===== VARIAÇÕES: perguntas parecidas, mas com respostas diferentes =====
 const DESC=POOL[0].map(q=>{const m=q.q.match(/^Qual módulo (.+)\?$/);return m?{n:q.a,d:m[1][0].toUpperCase()+m[1].slice(1),q}:null}).filter(Boolean);
 DESC.forEach(x=>{x.q.t={q:`Qual descrição corresponde ao módulo ${x.n}?`,a:x.d,d:DESC.filter(y=>y!=x).map(y=>y.d)}});
@@ -153,11 +153,11 @@ const T2={"O que é o DANFE?":["Qual termo corresponde a “Documento Auxiliar d
 "O que significa “faturar”":["Como se chama o ato de transformar o pedido em nota fiscal?","Faturar","Cancelar;Inutilizar;Homologar;Transferir"],
 "Qual a diferença entre o ambiente de testes":["Como se chama o ambiente de testes, sem valor fiscal?","Homologação","Produção;Contingência;Rascunho;Transmissão"]};
 POOL[1].forEach(q=>{for(const k in T2)if(q.q.startsWith(k)){const v=T2[k];q.t={q:v[0],a:v[1],d:v[2].split(";")}}});
-[["Qual a diferença entre cancelar uma nota","Uma nota autorizada saiu com o cliente errado. Devo cancelar ou inutilizar a numeração? Justifique.~Cancelar, pois a nota já foi autorizada; inutilizar serve só para numeração que não chegou a ser usada.~cancel|autorizada|inutiliz|numera,nao usad,sem uso"],
-["Quem pode ser responsável pelo pagamento do frete","O que significam frete CIF e frete FOB na nota?~CIF: o emitente (vendedor) paga o frete. FOB: o destinatário (comprador) paga.~cif|emitente,remetente,vendedor|fob|destinat,comprador"],
+[["Em que situação se usa o cancelamento","Uma nota já aprovada pelo governo saiu com o cliente errado. Qual procedimento adotar, e por que o outro não serve?~Cancelar a nota e emitir outra, pois a inutilização só vale para números que nunca foram usados.~cancel|emitir outra,nova nota,refaz|inutiliz|nunca,nao usad,numero"],
+["Quem pode ser responsável pelo pagamento do frete","Quando o vendedor paga o frete e quando é o comprador quem paga, como o sistema classifica cada caso na nota?~Quando o vendedor paga é CIF (emitente); quando o comprador paga é FOB (destinatário).~cif|emitente,remetente|fob|destinat"],
 ["Qual a diferença entre o certificado digital em arquivo","Qual a diferença entre o certificado A1 e o A3?~O A1 é um arquivo instalado no computador; o A3 fica em cartão ou token, exige senha e é mais seguro.~a1,arquivo,pfx|a3,token,cartao|seguro,senha,dispositivo,fisico"],
-["O que significa ratear o frete","Como o frete de uma nota com 2 itens é dividido entre eles?~Proporcionalmente ao valor ou ao peso de cada item.~proporcion,rateio,distribu|valor,peso|item"],
-["Como é formado o valor total de um item","Um item tem quantidade 2, preço 100, desconto 10 e frete 5. Qual o valor total e como se chega nele?~2 vezes 100 dá 200, menos 10 de desconto, mais 5 de frete: total 195.~195|200|desconto|frete"],
+["O que significa ratear o frete","Como o frete de uma nota com 2 produtos é dividido entre eles?~Proporcionalmente ao valor ou ao peso de cada produto.~proporcion,rateio|valor,peso|cada,respectiv,separad"],
+["Descreva a conta que o sistema faz","Um item tem quantidade 2, preço unitário 100, desconto de 10 e frete de 5. Qual é o valor total do item e que contas levam a ele?~2 vezes 100 dá 200; menos 10 dá 190; mais 5 de frete dá 195.~195|200|190|vezes,multipl"],
 ["Por que o sistema permite bloquear a emissão de notas com data retroativa","Qual risco existe em emitir uma nota com data anterior à da última nota emitida?~Quebra a cronologia da numeração e pode gerar problemas com a SEFAZ e com a escrituração.~cronolog,sequencia,numera|sefaz,fiscal,legisl|escritur,problema,rejei"]
 ].forEach(([k,l])=>{const q=POOL[2].find(x=>x.q.startsWith(k));if(q)q.t=ds(l)[0]});
 const NV=["N1","N2","N3","N4","N5"];
@@ -175,19 +175,34 @@ const sh=a=>a.map(x=>[rng(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt=s=>{s=Math.round(s);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
 const cmp=(a,b)=>b.score-a.score||a.time-b.time;
-const wk=(d=new Date())=>{const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())),n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);const y=t.getUTCFullYear();return y+"-W"+String(Math.ceil(((t-Date.UTC(y,0,1))/864e5+1)/7)).padStart(2,"0")};
+const wk=(d=new Date())=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const dm=k=>k.slice(8)+"/"+k.slice(5,7);
 const WK=wk();
 let S,G,RK,HF=[],rkLocal=false,LOC=[],tmr=null,AC=null,U=null,MSG="",LMSG="";
 try{LOC=JSON.parse(localStorage.getItem("rk")||"[]")}catch(e){}
 try{U=JSON.parse(localStorage.getItem("u")||"null")}catch(e){}
-// cada jogador recebe um sorteio próprio (por conta + semana): outras perguntas, outra ordem, outras variações e alternativas
+// cada jogador recebe um sorteio próprio (por conta + dia): outras perguntas, outra ordem, outras variações e alternativas
 const mk=w=>w.d?{...w,o:sh([w.a,...sh(w.d).slice(0,4)])}:w;
 const build=()=>POOL.map(pl=>sh(pl).slice(0,10).map(q=>mk(q.t&&rng()<.5?q.t:q)));
 const fresh=seed=>{rng=seed?mul(seed):Math.random;G=build();S={p:0,i:0,lives:V,score:0,ans:false,hits:0,tot:0,view:"intro",saved:false,won:false,time:0,t0:0,left:60,w:0,c:99,txt:"",st:0}};
 fresh();
 const need=q=>Math.ceil(q.g.length*.6-1e-9);
 // validação automática: cada grupo é um conceito (sinônimos); acerta quem cobrir pelo menos 60% dos conceitos
-function grade(q,txt){const t=nz(txt),miss=[];let h=0;q.g.forEach(g=>{if(g.some(k=>t.includes(k)))h++;else miss.push(g[0])});return{h,n:q.g.length,miss,ok:txt.trim().length>=10&&h>=need(q)}}
+const hit=(t,k)=>k.length<4?new RegExp("(^|[^a-z0-9])"+k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"([^a-z0-9]|$)").test(t):t.includes(k);
+const SW=new Set("a o as os um uma uns umas de da do das dos em no na nos nas ao aos pela pelo pelas pelos por para com sem sob sobre entre ate apos e ou mas que se como quando onde porque pois ja nao mais muito tambem ser sao foi era esta estao fica ficam tem ha seu sua seus suas ele ela eles elas isso isto cada todo toda todos todas qual quais".split(" "));
+const words=t=>nz(t).split(/[^a-z0-9-]+/).filter(Boolean);
+// palavra-chave que é só eco da pergunta (inclui flexões: comercial/comerciais) não conta
+function echo(k,nq){if(k.length<5||k.includes(" "))return hit(nq,k);return words(nq).filter(w=>w.length>=5).some(w=>{let i=0;while(i<k.length&&i<w.length&&k[i]==w[i])i++;return i>=Math.max(5,Math.min(k.length,w.length)-1)})}
+// 1) a resposta precisa ter forma de frase; 2) só então os critérios são contados
+function grade(q,txt){
+  const t=nz(txt),nq=nz(q.q),ws=words(txt),miss=[],toks=[];let h=0;
+  q.g.forEach(g=>{const ks=g.filter(k=>!echo(k,nq));ks.forEach(k=>toks.push(k));if(ks.some(k=>hit(t,k)))h++;else miss.push(ks[0]||g[0])});
+  const n=ws.length,fw=ws.filter(w=>SW.has(w));let why="";
+  if(n<6)why="Escreva uma frase completa, com pelo menos 6 palavras.";
+  else if(fw.length/n<.2||new Set(fw).size<2)why="Escreva em frases, ligando as ideias (de, para, que, com...), e não apenas uma lista de termos.";
+  else if(new Set(ws).size/n<.6)why="Evite repetir palavras.";
+  else if(ws.filter(w=>toks.some(k=>!k.includes(" ")&&hit(w,k))).length/n>.7)why="A resposta parece uma lista de palavras-chave; explique com as suas palavras.";
+  return{h,n:q.g.length,miss,sf:!why,why,ok:!why&&h>=need(q)}}
 function tone(f,d,t,v,dl){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),s=AC.currentTime+(dl||0);o.type=t||"sine";o.frequency.setValueAtTime(f,s);g.gain.setValueAtTime(v||.15,s);g.gain.exponentialRampToValueAtTime(.0001,s+d);o.connect(g);g.connect(AC.destination);o.start(s);o.stop(s+d)}catch(e){}}
 const SFX={
 ok:()=>{tone(660,.12,"triangle",.2);tone(880,.22,"triangle",.2,.1)},
@@ -219,7 +234,7 @@ async function doLogin(c){
 }
 async function resend(){try{await idt("accounts:sendOobCode",{requestType:"VERIFY_EMAIL",idToken:U.id});LMSG="E-mail de verificação reenviado."}catch(e){LMSG="Não foi possível reenviar agora."}show()}
 function logout(){U=null;try{localStorage.removeItem("u")}catch(e){}show()}
-// ===== banco de dados (REST) e ranking semanal =====
+// ===== banco de dados (REST) e ranking diário =====
 const dbu=p=>FB.replace(/\/$/,"")+"/"+p+".json";
 async function dbget(p){const r=await fetch(dbu(p));if(!r.ok)throw 0;return r.json()}
 async function dbput(p,v){const r=await fetch(dbu(p)+(AUTH?"?auth="+await tok():""),{method:AUTH?"PUT":"POST",body:JSON.stringify(v)});return r.ok}
@@ -228,7 +243,7 @@ async function loadRank(){
   const loc=()=>{RK=LOC.filter(r=>r.w==WK).sort(cmp).slice(0,10);rkLocal=true};
   if(FB){
     try{RK=topN(await dbget("ranking/"+WK)).slice(0,10);rkLocal=false}catch(e){loc()}
-    try{HF=await Promise.all([1,2,3,4,5].map(async k=>{const w=wk(new Date(Date.now()-7*864e5*k));return{w,t:topN(await dbget("ranking/"+w)).slice(0,3)}}))}catch(e){HF=[]}
+    try{HF=await Promise.all([1,2,3,4,5].map(async k=>{const w=wk(new Date(Date.now()-864e5*k));return{w,t:topN(await dbget("ranking/"+w)).slice(0,3)}}))}catch(e){HF=[]}
   }else loc();
   if(S.view=="intro"||(S.view=="end"&&S.saved))show();
 }
@@ -236,12 +251,12 @@ const MED=["🥇","🥈","🥉"];
 function rankHTML(){
   if(RK===undefined)return"<p>Carregando ranking…</p>";
   const note=rkLocal?`<p><small>${FB?"Sem conexão com o ranking online; mostrando o salvo neste navegador.":"Ranking salvo só neste navegador."}</small></p>`:"";
-  if(!RK.length)return`<p>Ninguém no ranking desta semana ainda. Seja o primeiro!</p>`+note;
+  if(!RK.length)return`<p>Ninguém no ranking de hoje ainda. Seja o primeiro!</p>`+note;
   return note+`<table><tr><th>#</th><th>Nome</th><th>Pontos</th><th>Tempo</th></tr>${RK.map((r,k)=>`<tr class="${k<3?"m"+(k+1):""}"><td>${k<3?MED[k]:k+1}</td><td>${esc(r.name)} <small>· ${esc(r.phase)}</small></td><td>${esc(r.score)}</td><td>${fmt(r.time||0)}</td></tr>`).join("")}</table><p><small>Mais pontos fica na frente; em empate, vence o menor tempo total.</small></p>`;
 }
 function hofHTML(){
   const rows=HF.filter(h=>h.t.length);
-  return`<aside class="hof"><h2>🏅 Últimas semanas</h2>${rows.length?rows.map(h=>`<div class="hw"><b>${h.w}</b>${h.t.map((r,k)=>`<div class="m${k+1}">${MED[k]} ${esc(r.name)} <small>${esc(r.score)}</small></div>`).join("")}</div>`).join(""):"<p><small>Ainda sem semanas anteriores.</small></p>"}</aside>`;
+  return`<aside class="hof"><h2>🏅 Últimos dias</h2>${rows.length?rows.map(h=>`<div class="hw"><b>${dm(h.w)}</b>${h.t.map((r,k)=>`<div class="m${k+1}">${MED[k]} ${esc(r.name)} <small>${esc(r.score)}</small></div>`).join("")}</div>`).join(""):"<p><small>Ainda sem dias anteriores.</small></p>"}</aside>`;
 }
 async function save(){
   const n=document.getElementById("nm").value.trim().slice(0,20);
@@ -257,7 +272,7 @@ async function start(){
   if(AUTH){
     if(!(U&&U.ver)){MSG="Entre com sua conta para jogar.";return show()}
     let ok=false;try{ok=await dbput("plays/"+WK+"/"+U.uid,{t:Date.now(),e:U.email})}catch(e){}
-    if(!ok){MSG="Você já jogou nesta semana ("+WK+") ou não foi possível conectar. Volte na próxima semana!";return show()}
+    if(!ok){MSG="Você já jogou hoje ("+dm(WK)+") ou não foi possível conectar. Volte amanhã!";return show()}
   }
   MSG="";fresh(AUTH?hs(U.uid+WK):0);SFX.start();nq();loadRank();
 }
@@ -267,28 +282,29 @@ function head(){
 }
 function loginHTML(){
   if(!AUTH)return"";
-  if(U&&U.ver)return`<div class="card"><p>Conectado como <b>${esc(U.email)}</b> · <button class="g" onclick="logout()">Sair</button></p><p><small>Cada e-mail pode jogar uma vez por semana (${WK}).</small></p></div>`;
+  if(U&&U.ver)return`<div class="card"><p>Conectado como <b>${esc(U.email)}</b> · <button class="g" onclick="logout()">Sair</button></p><p><small>Cada e-mail pode jogar uma vez por dia (hoje: ${dm(WK)}).</small></p></div>`;
   return`<div class="card"><h2>🔐 Entre para jogar</h2><input id="em" type="email" placeholder="E-mail"> <input id="pw" type="password" placeholder="Senha (mín. 6 caracteres)"><br><button class="b" onclick="doLogin(0)">Entrar</button> <button class="g" onclick="doLogin(1)">Criar conta</button> ${U&&!U.ver?`<button class="g" onclick="resend()">Reenviar e-mail de verificação</button>`:""}<p class="fb">${esc(LMSG)}</p></div>`;
 }
 const canPlay=()=>!AUTH||(U&&U.ver);
 function show(){
   if(S.view=="intro"){
-    $.innerHTML=`<div class="card"><h1>🧭 A Jornada do Implantador</h1><p>50 perguntas sobre o JunsoftERP em 5 níveis de 10, sorteadas de um banco de 100. Cada jogador recebe um sorteio próprio, com perguntas, ordem e alternativas diferentes. Cada pergunta vale 1 ponto.</p><p><b>N1 e N2:</b> múltipla escolha (a–e), 60 s por pergunta. <b>N3, N4 e N5:</b> respostas descritivas, 240 s por pergunta; o sistema avalia pelos conceitos-chave citados e mostra quantos você já atendeu enquanto digita.</p><p>Você tem <b>5 vidas</b>. A cada <b>10 acertos seguidos</b> ganha 1 vida; com as 5 cheias, ganha um 🛡️ escudo (máximo de 1). O ranking é <b>semanal</b>: mais pontos fica na frente e, em empate, o menor tempo total.</p>${MSG?`<p class="fb"><b>${esc(MSG)}</b></p>`:""}${canPlay()?`<button class="b" onclick="start()">Começar</button>`:""}</div>`+loginHTML()+`<div class="card"><h2>🏆 Top 10 da semana ${WK}</h2>${rankHTML()}</div>`+hofHTML();return}
+    $.innerHTML=`<div class="card"><h1>🧭 A Jornada do Implantador</h1><p>50 perguntas sobre o JunsoftERP em 5 níveis de 10, sorteadas de um banco de 100. Cada jogador recebe um sorteio próprio, com perguntas, ordem e alternativas diferentes. Cada pergunta vale 1 ponto.</p><p><b>N1 e N2:</b> múltipla escolha (a–e), 60 s por pergunta. <b>N3, N4 e N5:</b> respostas descritivas, 240 s por pergunta; o sistema avalia pelos conceitos-chave citados e mostra quantos você já atendeu enquanto digita.</p><p>Você tem <b>5 vidas</b>. A cada <b>10 acertos seguidos</b> ganha 1 vida; com as 5 cheias, ganha um 🛡️ escudo (máximo de 1). O ranking é <b>diário</b> e recomeça a cada dia: mais pontos fica na frente e, em empate, o menor tempo total.</p>${MSG?`<p class="fb"><b>${esc(MSG)}</b></p>`:""}${canPlay()?`<button class="b" onclick="start()">Começar</button>`:""}</div>`+loginHTML()+`<div class="card"><h2>🏆 Top 10 de hoje (${dm(WK)})</h2>${rankHTML()}</div>`+hofHTML();return}
   if(S.view=="phase"){
     $.innerHTML=`<div class="card"><h2>✅ Nível ${NV[S.p]} concluído</h2><p class="big">${S.score} pts</p><p>Tempo total: ${fmt(S.time)} · Vidas: ${hearts()}</p><button class="b" onclick="S.p++;S.i=0;SFX.start();nq()">Próximo: ${NV[S.p+1]} (${S.p+1<2?"múltipla escolha":"resposta descritiva, 240 s"})</button></div>`;return}
   if(S.view=="end"){
     $.innerHTML=`<div class="card"><h2>${S.won?"🏆 Jornada concluída! Você é Lenda da Implantação":"💥 Fim das vidas no nível "+NV[S.p]}</h2><p class="big">${S.score} pts</p><p>Tempo total: ${fmt(S.time)} · Acertos: ${S.hits} de ${S.tot}</p>`+
-    (S.saved?"":`<p>Registre seu nome no ranking da semana:</p><input id="nm" maxlength="20" placeholder="Seu nome"> <button class="b" onclick="save()">Salvar</button><p id="msg" class="fb"></p>`)+
-    (AUTH?`<p><small>Seu próximo jogo será na semana que vem.</small></p>`:`<button class="g" onclick="start()">Jogar de novo</button>`)+`</div><div class="card"><h2>🏆 Top 10 da semana ${WK}</h2>${rankHTML()}</div>`+hofHTML();
+    (S.saved?"":`<p>Registre seu nome no ranking de hoje:</p><input id="nm" maxlength="20" placeholder="Seu nome"> <button class="b" onclick="save()">Salvar</button><p id="msg" class="fb"></p>`)+
+    (AUTH?`<p><small>Seu próximo jogo será amanhã.</small></p>`:`<button class="g" onclick="start()">Jogar de novo</button>`)+`</div><div class="card"><h2>🏆 Top 10 de hoje (${dm(WK)})</h2>${rankHTML()}</div>`+hofHTML();
     if(RK===undefined)loadRank();return}
   const q=G[S.p][S.i];
   $.innerHTML=`<div class="side"><div>Tempo total<b id="ct">${fmt(S.time)}</b></div><div>Restante<b id="cr">${Math.ceil(S.left)}s</b></div></div>`+head()+`<div class="card"><div class="bar"><i id="tb" style="width:${S.left/LIM()*100}%;background:var(--er)"></i></div><h2>${q.q}</h2>`+
   (q.o?q.o.map((o,k)=>`<button class="o" ${S.ans?"disabled":""} onclick="pick(${k})"><b>${LET[k]})</b> ${o}</button>`).join(""):
-  `<p class="crit">Critérios: atenda ao menos <b>${need(q)}</b> de <b>${q.g.length}</b>. Atendidos: <b id="cc">${grade(q,S.txt).h}</b></p><textarea id="ans" rows="7" ${S.ans?"disabled":""} placeholder="Digite sua resposta (Ctrl+Enter envia)" oninput="crit()" onkeydown="if(event.ctrlKey&&event.key=='Enter')sendD()">${esc(S.txt)}</textarea>${S.ans?"":`<button class="b" onclick="sendD()">Enviar resposta</button>`}`)+`<div id="fb" class="fb"></div></div>`;
+  `<p class="crit">Critérios: atenda ao menos <b>${need(q)}</b> de <b>${q.g.length}</b>. Atendidos: <b id="cc">${grade(q,S.txt).h}</b> <span id="fm" class="fm"></span></p><textarea id="ans" rows="7" ${S.ans?"disabled":""} placeholder="Digite sua resposta (Ctrl+Enter envia)" oninput="crit()" onkeydown="if(event.ctrlKey&&event.key=='Enter')sendD()">${esc(S.txt)}</textarea>${S.ans?"":`<button class="b" onclick="sendD()">Enviar resposta</button>`}`)+`<div id="fb" class="fb"></div></div>`;
 }
 function crit(){
-  const q=G[S.p][S.i],a=document.getElementById("ans"),c=document.getElementById("cc");if(!a||!c)return;
-  const h=grade(q,a.value).h;c.textContent=h;c.style.color=h>=need(q)?"var(--ok)":"inherit";
+  const q=G[S.p][S.i],a=document.getElementById("ans"),c=document.getElementById("cc"),f=document.getElementById("fm");if(!a||!c)return;
+  const r=grade(q,a.value);c.textContent=r.h;c.style.color=r.h>=need(q)?"var(--ok)":"inherit";
+  if(f){f.textContent=a.value.trim()?(r.sf?"· ✔ formato de frase ok":"· ⚠ "+r.why):"";f.style.color=r.sf?"var(--ok)":"var(--er)"}
 }
 function upd(){
   const g=id=>document.getElementById(id),L=S.left,c=Math.ceil(L);
@@ -334,7 +350,7 @@ function sendD(){
   const a=document.getElementById("ans"),q=G[S.p][S.i];
   S.txt=a?a.value:"";
   const r=grade(q,S.txt);
-  done(r.ok,(r.ok?"✅ Resposta aceita! +1 ponto. ":"❌ Resposta insuficiente. ")+`Critérios atendidos: ${r.h} de ${r.n} (mínimo ${need(q)}).`+(r.miss.length?` Faltou citar algo sobre: <i>${esc(r.miss.join(", "))}</i>.`:"")+`<br><b>Resposta modelo:</b> ${esc(q.m)}`);
+  done(r.ok,(r.ok?"✅ Resposta aceita! +1 ponto. ":(r.sf?"❌ Resposta insuficiente. ":"❌ "+r.why+" "))+`Critérios atendidos: ${r.h} de ${r.n} (mínimo ${need(q)}).`+(r.miss.length?` Faltou citar algo sobre: <i>${esc(r.miss.join(", "))}</i>.`:"")+`<br><b>Resposta modelo:</b> ${esc(q.m)}`);
 }
 function next(){
   if(S.lives==0){S.view="end";return show()}

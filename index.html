@@ -223,12 +223,12 @@ function logout(){U=null;try{localStorage.removeItem("u")}catch(e){}show()}
 const dbu=p=>FB.replace(/\/$/,"")+"/"+p+".json";
 async function dbget(p){const r=await fetch(dbu(p));if(!r.ok)throw 0;return r.json()}
 async function dbput(p,v){const r=await fetch(dbu(p)+(AUTH?"?auth="+await tok():""),{method:AUTH?"PUT":"POST",body:JSON.stringify(v)});return r.ok}
-const top=o=>Object.values(o||{}).sort(cmp);
+const topN=o=>Object.values(o||{}).sort(cmp);
 async function loadRank(){
   const loc=()=>{RK=LOC.filter(r=>r.w==WK).sort(cmp).slice(0,10);rkLocal=true};
   if(FB){
-    try{RK=top(await dbget("ranking/"+WK)).slice(0,10);rkLocal=false}catch(e){loc()}
-    try{HF=await Promise.all([1,2,3,4,5].map(async k=>{const w=wk(new Date(Date.now()-7*864e5*k));return{w,t:top(await dbget("ranking/"+w)).slice(0,3)}}))}catch(e){HF=[]}
+    try{RK=topN(await dbget("ranking/"+WK)).slice(0,10);rkLocal=false}catch(e){loc()}
+    try{HF=await Promise.all([1,2,3,4,5].map(async k=>{const w=wk(new Date(Date.now()-7*864e5*k));return{w,t:topN(await dbget("ranking/"+w)).slice(0,3)}}))}catch(e){HF=[]}
   }else loc();
   if(S.view=="intro"||(S.view=="end"&&S.saved))show();
 }
